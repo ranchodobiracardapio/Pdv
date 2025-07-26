@@ -1740,7 +1740,10 @@
 
       btnCancelar.addEventListener("click", () => {
         if (!mesaSelecionada) return;
-        if (confirm(`Deseja cancelar todos os itens da ${mesaSelecionada}?`)) {
+        
+       
+       
+       {
           comanda[mesaSelecionada] = [];
           clienteNomeComandaInput.value = "";
           atualizarComanda();
