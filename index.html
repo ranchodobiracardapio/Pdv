@@ -328,7 +328,7 @@
     <div aria-labelledby="modalWhatsAppWebTitle" aria-modal="true" id="modalWhatsAppWeb" role="dialog">
      <div id="modalWhatsAppWebContent">
       <button id="btnCloseWhatsAppWeb" aria-label="Fechar WhatsApp Web">Fechar</button>
-      <iframe src="https://api.whatsapp.com/send/?phone=67992321321&text&type=phone_number&app_absent=0&wame_ctl=1" title="WhatsApp Web"></iframe>
+      <iframe src="https://wa.me//67992526860" title="WhatsApp Web"></iframe>
      </div>
     </div>
     <section class="flex-1 p-4 space-y-3" id="vendaSection">
@@ -459,7 +459,15 @@
       <button id="btnImprimirComanda" type="button" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1 rounded shadow transition" aria-label="Imprimir comanda">Imprimir</button>
       <button type="button" class="btn-encerrar bg-green-700 hover:bg-green-800 text-white text-xs font-semibold px-3 py-1 rounded shadow transition" aria-label="Encerrar comanda">Encerrar</button>
      </div>
-     
+     <div class="flex space-x-4">
+      <button class="flex-1 bg-[#0f3a7d] border border-[#0a2a5a] rounded py-3 text-white font-semibold flex items-center justify-center space-x-3 hover:bg-[#0a2a5a] transition" disabled id="btnCancelar" type="button">
+       <i class="fas fa-times-circle text-lg"></i>
+       <span>Cancelar</span>
+      </button>
+      <button class="flex-1 bg-green-700 border border-green-800 rounded py-3 text-white font-semibold flex items-center justify-center space-x-3 hover:bg-green-800 transition" id="btnFinalizar" type="button">
+       <span>Finalizar</span>
+      </button>
+     </div>
      <button id="btnImprimirComanda" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded transition flex items-center justify-center space-x-2" type="button">
       <i class="fas fa-print"></i>
       <span>Imprimir</span>
@@ -468,7 +476,7 @@
    </div>
    <footer class="flex justify-between items-center bg-[#0a2a5a] rounded-b-lg px-6 py-2 text-white text-xs font-semibold select-none">
     <div>Versão 1.0.0</div>
-    <div>Super Hubz PDV 1.1.0</div>
+    <div>Super Hubz PDV 0.1.1</div>
     <div>Dev: Neves</div>
    </footer>
   </div>
@@ -532,7 +540,7 @@
       let pedidosDelivery = [];
 
       // Taxa de entrega editável
-      let taxaEntregaValor = 5.00;
+      let taxaEntregaValor = 1.00;
 
       // Para controle do item que está recebendo desconto
       let descontoItemIndex = null;
