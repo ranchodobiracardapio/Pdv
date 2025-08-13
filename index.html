@@ -1563,11 +1563,22 @@
         });
         texto += `\nTotal: R$ ${total.toFixed(2).replace(".", ",")}`;
 
-        const printWindow = window.open("", "", "width=400,height=600");
-        printWindow.document.write('<pre style="font-family:sans-serif; font-size:16px;">' + texto + "</pre>");
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
+        if (navigator.share && window.innerWidth <= 767) {
+          // Mobile: usar Web Share API para compartilhar texto
+          navigator.share({
+            title: `Comanda - ${mesaSelecionada}`,
+            text: texto,
+          }).catch((error) => {
+            alert("Erro ao compartilhar: " + error);
+          });
+        } else {
+          // Desktop: abrir janela de impressão
+          const printWindow = window.open("", "", "width=400,height=600");
+          printWindow.document.write('<pre style="font-family:sans-serif; font-size:16px;">' + texto + "</pre>");
+          printWindow.document.close();
+          printWindow.focus();
+          printWindow.print();
+        }
       }
 
       function armazenarComandaCard(mesa, itens) {
@@ -1688,11 +1699,22 @@
           });
           texto += `\nTotal: R$ ${totalPrint.toFixed(2).replace(".", ",")}`;
 
-          const printWindow = window.open("", "", "width=400,height=600");
-          printWindow.document.write('<pre style="font-family:sans-serif; font-size:16px;">' + texto + "</pre>");
-          printWindow.document.close();
-          printWindow.focus();
-          printWindow.print();
+          if (navigator.share && window.innerWidth <= 767) {
+            // Mobile: usar Web Share API para compartilhar texto
+            navigator.share({
+              title: `Comanda - ${mesa}`,
+              text: texto,
+            }).catch((error) => {
+              alert("Erro ao compartilhar: " + error);
+            });
+          } else {
+            // Desktop: abrir janela de impressão
+            const printWindow = window.open("", "", "width=400,height=600");
+            printWindow.document.write('<pre style="font-family:sans-serif; font-size:16px;">' + texto + "</pre>");
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+          }
         });
 
         comandasFinalizadas.push(card);
@@ -1934,11 +1956,22 @@
               });
               texto += `\nTotal: R$ ${totalPrint.toFixed(2).replace(".", ",")}`;
 
-              const printWindow = window.open("", "", "width=400,height=600");
-              printWindow.document.write('<pre style="font-family:sans-serif; font-size:16px;">' + texto + "</pre>");
-              printWindow.document.close();
-              printWindow.focus();
-              printWindow.print();
+              if (navigator.share && window.innerWidth <= 767) {
+                // Mobile: usar Web Share API para compartilhar texto
+                navigator.share({
+                  title: `Entrega - ${pedido.mesa}`,
+                  text: texto,
+                }).catch((error) => {
+                  alert("Erro ao compartilhar: " + error);
+                });
+              } else {
+                // Desktop: abrir janela de impressão
+                const printWindow = window.open("", "", "width=400,height=600");
+                printWindow.document.write('<pre style="font-family:sans-serif; font-size:16px;">' + texto + "</pre>");
+                printWindow.document.close();
+                printWindow.focus();
+                printWindow.print();
+              }
             });
           }
 
@@ -2046,15 +2079,23 @@
           alert("Por favor, insira o texto do pedido.");
           return;
         }
-        if (!mesaSelecionada) {
-          alert("Selecione uma mesa antes de criar a comanda.");
-          return;
-        }
+        // Detectar se o texto contém endereço de entrega e contato para enviar direto para aba entregas
+        const enderecoRegex = /Endereço:\s*(.+)/i;
+        const contatoRegex = /Contato:\s*(\d{8,15})/i;
+        const observacoesRegex = /Observações:\s*(.+)/i;
+        const formaPagamentoRegex = /Forma de pagamento:\s*(.+)/i;
+
+        const enderecoMatch = texto.match(enderecoRegex);
+        const contatoMatch = texto.match(contatoRegex);
+        const observacoesMatch = texto.match(observacoesRegex);
+        const formaPagamentoMatch = texto.match(formaPagamentoRegex);
+
+        // Extrair itens do pedido
         const linhas = texto.split("\n");
         const itens = [];
-        const regex = /^\*(.+?)\*\s+x(\d+)\s+-\s+R\$ ?([\d.,]+)$/i;
+        const regexItem = /^\*(.+?)\*\s+x(\d+)\s+-\s+R\$ ?([\d.,]+)$/i;
         for (const linha of linhas) {
-          const match = linha.trim().match(regex);
+          const match = linha.trim().match(regexItem);
           if (match) {
             const nome = match[1].trim();
             const qtde = parseInt(match[2]);
@@ -2074,6 +2115,40 @@
         }
         if (itens.length === 0) {
           alert("Nenhum item válido encontrado no texto.");
+          return;
+        }
+
+        // Se endereço de entrega existe, enviar direto para aba entregas
+        if (enderecoMatch) {
+          // Criar pedido para entregas
+          const enderecoEntrega = enderecoMatch[1].trim();
+          const contato = contatoMatch ? contatoMatch[1].trim() : "";
+          const clienteNome = observacoesMatch ? observacoesMatch[1].trim() : "";
+          const formaPagamento = formaPagamentoMatch ? formaPagamentoMatch[1].trim() : "";
+
+          // Criar objeto pedido delivery
+          const pedidoDelivery = {
+            mesa: "Delivery",
+            itens,
+            total: calcularTotal(itens),
+            clienteNome,
+            enderecoColeta: "Rua Báltico 79 Jardim Presidente",
+            enderecoEntrega,
+            contato,
+            formaPagamento,
+            status: "pendente",
+          };
+          pedidosDelivery.push(pedidoDelivery);
+          atualizarBadgeDelivery();
+          mostrarDelivery();
+          modalCreateOrder.classList.remove("active");
+          alert("Pedido criado na aba Entregas com endereço e contato preenchidos.");
+          return;
+        }
+
+        // Caso contrário, criar comanda normal na mesa selecionada
+        if (!mesaSelecionada) {
+          alert("Selecione uma mesa antes de criar a comanda.");
           return;
         }
         comanda[mesaSelecionada] = itens;
