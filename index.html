@@ -24,9 +24,9 @@
     .timer {
       font-variant-numeric: tabular-nums;
       font-weight: 600;
-      font-size: 0.75rem;
+      font-size: 0.6rem;
       color: #f97316;
-      min-width: 48px;
+      min-width: 40px;
       text-align: right;
     }
     button.remove-item {
@@ -34,7 +34,7 @@
       border: none;
       color: #f97316;
       cursor: pointer;
-      font-size: 1rem;
+      font-size: 0.85rem;
       padding: 0;
       transition: color 0.2s;
     }
@@ -49,28 +49,30 @@
     #btnFullscreenToggle {
       background-color: #2563eb;
       color: white;
-      padding: 0.25rem 0.75rem;
+      padding: 0.15rem 0.5rem;
       border-radius: 0.375rem;
       font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.3rem;
       cursor: pointer;
       transition: background-color 0.2s;
+      font-size: 0.75rem;
     }
     #btnFullscreenToggle:hover {
       background-color: #1e40af;
     }
     #produtosGrid.scrollable {
-      max-height: 480px;
+      max-height: 270px;
       overflow-y: auto;
     }
     #relatorioEstoque {
-      max-height: 300px;
+      max-height: 260px;
       overflow-y: auto;
     }
     #mesaStatusBadge {
       position: relative;
+      font-size: 0.75rem;
     }
     #mesaStatusBadge::after {
       content: "Você tem uma comanda em aberto no balcão ou mesa.";
@@ -80,10 +82,10 @@
       transform: translateX(50%);
       background-color: #f97316;
       color: white;
-      padding: 6px 10px;
+      padding: 4px 7px;
       border-radius: 6px;
       white-space: nowrap;
-      font-size: 0.75rem;
+      font-size: 0.6rem;
       font-weight: 600;
       opacity: 0;
       pointer-events: none;
@@ -113,18 +115,21 @@
       background-color: #f97316;
       color: white;
       font-weight: 700;
-      font-size: 0.75rem;
-      padding: 0 6px;
+      font-size: 0.6rem;
+      padding: 0 4px;
       border-radius: 9999px;
-      min-width: 20px;
-      height: 20px;
+      min-width: 16px;
+      height: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-left: 4px;
+      margin-left: 3px;
       user-select: none;
     }
-    #modalDelivery {
+    #modalDelivery,
+    #modalCreateOrder,
+    #modalDiscount,
+    #modalWhatsAppWeb {
       position: fixed;
       inset: 0;
       background-color: rgba(0, 0, 0, 0.5);
@@ -133,44 +138,15 @@
       justify-content: center;
       z-index: 60;
     }
-    #modalDelivery.active {
-      display: flex;
-    }
-    #modalCreateOrder {
-      position: fixed;
-      inset: 0;
-      background-color: rgba(0, 0, 0, 0.5);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 70;
-    }
-    #modalCreateOrder.active {
-      display: flex;
-    }
-    #modalDiscount {
-      position: fixed;
-      inset: 0;
-      background-color: rgba(0, 0, 0, 0.5);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 80;
-    }
-    #modalDiscount.active {
+    #modalDelivery.active,
+    #modalCreateOrder.active,
+    #modalDiscount.active,
+    #modalWhatsAppWeb.active {
       display: flex;
     }
     #modalWhatsAppWeb {
-      position: fixed;
-      inset: 0;
       background-color: rgba(0, 0, 0, 0.7);
-      display: none;
-      align-items: center;
-      justify-content: center;
       z-index: 100;
-    }
-    #modalWhatsAppWeb.active {
-      display: flex;
     }
     #modalWhatsAppWebContent {
       position: relative;
@@ -197,11 +173,12 @@
       color: white;
       border: none;
       border-radius: 0.375rem;
-      padding: 0.25rem 0.5rem;
+      padding: 0.2rem 0.4rem;
       font-weight: 600;
       cursor: pointer;
       z-index: 10;
       transition: background-color 0.2s;
+      font-size: 0.75rem;
     }
     #btnCloseWhatsAppWeb:hover {
       background-color: #ea580c;
@@ -211,15 +188,20 @@
         display: none;
       }
       nav > button {
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+      }
+      #produtosGrid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        max-height: 180px !important;
+        overflow-y: auto !important;
       }
     }
     .editable-mesa {
       border: none;
       background: transparent;
       font-weight: 700;
-      font-size: 1.125rem;
+      font-size: 0.9rem;
       color: #0f3a7d;
       width: auto;
       max-width: 100%;
@@ -233,12 +215,12 @@
       border: none;
       background: transparent;
       font-weight: 600;
-      font-size: 1rem;
+      font-size: 0.85rem;
       color: #0f3a7d;
       width: 100%;
       max-width: 100%;
       padding: 0;
-      margin: 0 0 0.5rem 0;
+      margin: 0 0 0.3rem 0;
       outline: none;
       cursor: text;
       user-select: text;
@@ -248,17 +230,17 @@
 </head>
 <body class="bg-[#0f3a7d] font-sans select-none">
   <div
-    class="max-w-[1200px] mx-auto mt-6 rounded-lg shadow-lg bg-[#0f3a7d] border border-[#0a2a5a]"
+    class="max-w-[1200px] mx-auto mt-3 rounded-lg shadow-lg bg-[#0f3a7d] border border-[#0a2a5a]"
     id="appContainer"
   >
     <header
-      class="flex flex-col md:flex-row items-center justify-between bg-[#0a2a5a] rounded-t-lg px-6 py-3 text-white select-none space-y-2 md:space-y-0"
+      class="flex flex-col md:flex-row items-center justify-between bg-[#0a2a5a] rounded-t-lg px-4 py-1.5 text-white select-none space-y-1 md:space-y-0"
     >
       <nav
-        class="flex flex-wrap justify-center md:justify-end items-center gap-3 w-full md:w-auto text-sm font-semibold"
+        class="flex flex-wrap justify-center md:justify-end items-center gap-1.5 w-full md:w-auto text-xs font-semibold"
       >
         <button
-          class="flex items-center space-x-1 bg-[#f97316] px-4 py-2 rounded shadow-md hover:bg-[#ea580c] transition"
+          class="flex items-center space-x-1 bg-[#f97316] px-2 py-1 rounded shadow-md hover:bg-[#ea580c] transition"
           id="btnVenda"
           title="Aba PDV"
         >
@@ -266,33 +248,33 @@
           <span>PDV</span>
         </button>
         <button
-          class="flex items-center space-x-1 hover:text-[#f97316] transition cursor-pointer px-3 py-2 rounded hover:bg-[#0f3a7d] relative"
+          class="flex items-center space-x-1 hover:text-[#f97316] transition cursor-pointer px-2 py-1 rounded hover:bg-[#0f3a7d] relative"
           id="btnPedidos"
           title="Aba Pedidos"
         >
           <i class="fas fa-clipboard-list"></i>
           <span>Pedidos</span>
           <span
-            class="absolute -top-1 -right-2 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md select-none hidden"
+            class="absolute -top-1 -right-2 bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] font-bold shadow-md select-none hidden"
             id="badgePedidos"
             >0</span
           >
         </button>
         <button
-          class="flex items-center space-x-1 hover:text-[#f97316] transition cursor-pointer px-3 py-2 rounded hover:bg-[#0f3a7d] relative"
+          class="flex items-center space-x-1 hover:text-[#f97316] transition cursor-pointer px-2 py-1 rounded hover:bg-[#0f3a7d] relative"
           id="btnDelivery"
           title="Aba Entregas"
         >
           <i class="fas fa-motorcycle"></i>
           <span>Entregas</span>
           <span
-            class="absolute -top-1 -right-2 bg-green-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md select-none hidden"
+            class="absolute -top-1 -right-2 bg-green-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] font-bold shadow-md select-none hidden"
             id="badgeDelivery"
             >0</span
           >
         </button>
         <button
-          class="flex items-center space-x-1 hover:text-[#f97316] transition cursor-pointer px-3 py-2 rounded hover:bg-[#0f3a7d]"
+          class="flex items-center space-x-1 hover:text-[#f97316] transition cursor-pointer px-2 py-1 rounded hover:bg-[#0f3a7d]"
           id="btnFinanceiro"
           title="Abrir aba Financeiro"
           type="button"
@@ -301,7 +283,7 @@
           <span>Financeiro</span>
         </button>
         <button
-          class="flex items-center space-x-1 hover:text-[#f97316] transition cursor-pointer text-[#f97316] px-3 py-2 rounded"
+          class="flex items-center space-x-1 hover:text-[#f97316] transition cursor-pointer text-[#f97316] px-2 py-1 rounded"
           id="btnEstoque"
           title="Abrir aba Estoque"
           type="button"
@@ -310,7 +292,7 @@
           <span>Estoque</span>
         </button>
         <button
-          class="flex items-center space-x-1 hover:text-[#f97316] transition cursor-pointer px-3 py-2 rounded hover:bg-[#0f3a7d]"
+          class="flex items-center space-x-1 hover:text-[#f97316] transition cursor-pointer px-2 py-1 rounded hover:bg-[#0f3a7d]"
           id="btnCreateOrder"
           title="Criar Comanda a partir de texto"
           type="button"
@@ -332,16 +314,16 @@
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Abrir WhatsApp Web"
-          class="flex items-center px-3 py-2 rounded hover:bg-[#0f3a7d] transition text-white hover:text-[#25D366]"
+          class="flex items-center px-2 py-1 rounded hover:bg-[#0f3a7d] transition text-white hover:text-[#25D366]"
           id="btnWhatsAppWeb"
           title="Abrir WhatsApp Web"
           style=""
-          ><i class="fab fa-whatsapp text-2xl"></i
+          ><i class="fab fa-whatsapp text-lg"></i
         ></a>
       </nav>
     </header>
     <div
-      class="flex flex-col md:flex-row border-t border-[#0a2a5a] relative min-h-[600px]"
+      class="flex flex-col md:flex-row border-t border-[#0a2a5a] relative min-h-[520px]"
       id="appContainerMain"
     >
       <div
@@ -352,18 +334,18 @@
         aria-labelledby="modalTitle"
       >
         <div
-          class="bg-white rounded-lg max-w-md w-full p-6 max-h-[80vh] overflow-auto"
+          class="bg-white rounded-lg max-w-md w-full p-4 max-h-[70vh] overflow-auto"
         >
           <h2
-            class="text-xl font-bold mb-4 text-[#0f3a7d] select-text"
+            class="text-base font-bold mb-2 text-[#0f3a7d] select-text"
             id="modalTitle"
           >
             Selecione a Mesa ou Balcão
           </h2>
-          <div class="grid grid-cols-4 gap-3" id="mesasGrid"></div>
-          <div class="mt-6 flex justify-end space-x-3">
+          <div class="grid grid-cols-6 gap-1.5" id="mesasGrid"></div>
+          <div class="mt-4 flex justify-end space-x-2">
             <button
-              class="px-4 py-2 bg-[#0f3a7d] text-white rounded hover:bg-[#0a2a5a] transition"
+              class="px-3 py-1 bg-[#0f3a7d] text-white rounded hover:bg-[#0a2a5a] transition"
               id="btnFecharMesas"
               type="button"
             >
@@ -380,15 +362,15 @@
         role="dialog"
       >
         <div
-          class="bg-white rounded-lg max-w-lg w-full p-6 max-h-[80vh] overflow-auto"
+          class="bg-white rounded-lg max-w-lg w-full p-4 max-h-[70vh] overflow-auto"
         >
           <h2
-            class="text-xl font-bold mb-4 text-[#0f3a7d] select-text"
+            class="text-base font-bold mb-2 text-[#0f3a7d] select-text"
             id="modalDeliveryTitle"
           >
             Informações para Entregas
           </h2>
-          <form id="formDelivery" class="space-y-4">
+          <form id="formDelivery" class="space-y-2">
             <div>
               <label
                 for="clienteNome"
@@ -400,7 +382,7 @@
                 id="clienteNome"
                 name="clienteNome"
                 required
-                class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2563eb]"
+                class="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#2563eb]"
               />
             </div>
             <div>
@@ -414,7 +396,7 @@
                 id="enderecoColeta"
                 name="enderecoColeta"
                 required
-                class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2563eb]"
+                class="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#2563eb]"
                 value="Rua Báltico 79 Jardim Presidente"
               />
             </div>
@@ -429,24 +411,24 @@
                 id="enderecoEntrega"
                 name="enderecoEntrega"
                 required
-                class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2563eb]"
+                class="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#2563eb]"
               />
             </div>
-            <div id="deliveryRates" class="text-sm text-gray-700 space-y-2">
+            <div id="deliveryRates" class="text-xs text-gray-700 space-y-1">
               <p>Consultando taxas de entrega...</p>
             </div>
-            <div class="flex justify-end space-x-3 mt-4">
+            <div class="flex justify-end space-x-2 mt-2">
               <button
                 type="button"
                 id="btnCancelDelivery"
-                class="px-4 py-2 bg-gray-400 rounded hover:bg-gray-500 text-white font-semibold transition"
+                class="px-3 py-1 bg-gray-400 rounded hover:bg-gray-500 text-white font-semibold transition"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 id="btnConfirmDelivery"
-                class="px-4 py-2 bg-green-700 rounded hover:bg-green-800 text-white font-semibold transition"
+                class="px-3 py-1 bg-green-700 rounded hover:bg-green-800 text-white font-semibold transition"
               >
                 Confirmar
               </button>
@@ -462,130 +444,130 @@
         role="dialog"
       >
         <div
-          class="bg-white rounded-lg max-w-lg w-full p-6 max-h-[80vh] overflow-auto"
+          class="bg-white rounded-lg max-w-lg w-full p-4 max-h-[70vh] overflow-auto"
         >
           <h2
-            class="text-xl font-bold mb-4 text-[#0f3a7d] select-text"
+            class="text-base font-bold mb-2 text-[#0f3a7d] select-text"
             id="modalCreateOrderTitle"
           >
             Criar Comanda a partir de Texto
           </h2>
           <textarea
             id="inputCreateOrder"
-            rows="15"
-            class="w-full border border-gray-300 rounded p-3 text-sm font-mono resize-y focus:outline-none focus:ring-2 focus:ring-[#2563eb]"
+            rows="10"
+            class="w-full border border-gray-300 rounded p-2 text-xs font-mono resize-y focus:outline-none focus:ring-2 focus:ring-[#2563eb]"
             placeholder="Cole o texto do pedido aqui..."
           ></textarea>
-          <div class="flex justify-end space-x-3 mt-4">
+          <div class="flex justify-end space-x-2 mt-2">
             <button
               type="button"
               id="btnCancelCreateOrder"
-              class="px-4 py-2 bg-gray-400 rounded hover:bg-gray-500 text-white font-semibold transition"
+              class="px-3 py-1 bg-gray-400 rounded hover:bg-gray-500 text-white font-semibold transition"
             >
               Cancelar
             </button>
             <button
               type="button"
               id="btnConfirmCreateOrder"
-              class="px-4 py-2 bg-green-700 rounded hover:bg-green-800 text-white font-semibold transition"
+              class="px-3 py-1 bg-green-700 rounded hover:bg-green-800 text-white font-semibold transition"
             >
               Criar Comanda
             </button>
           </div>
         </div>
       </div>
-      <section class="flex-1 p-4 space-y-3" id="vendaSection">
-        <div class="flex space-x-3 mb-3">
+      <section class="flex-1 p-2 space-y-1" id="vendaSection">
+        <div class="flex space-x-1 mb-1">
           <button
-            class="flex-1 bg-white text-[#0f3a7d] font-bold text-xs py-2 rounded border border-[#0a2a5a] hover:bg-[#e0e7ff] transition flex items-center justify-center space-x-2 active-category"
+            class="flex-1 bg-white text-[#0f3a7d] font-bold text-[10px] py-1 rounded border border-[#0a2a5a] hover:bg-[#e0e7ff] transition flex items-center justify-center space-x-1 active-category"
             id="btnCatTodos"
             data-categoria="todos"
             title="Mostrar todos os produtos"
           >
-            <i class="fas fa-th-large"></i>
+            <i class="fas fa-th-large text-xs"></i>
             <span>Todos</span>
           </button>
           <button
-            class="flex-1 bg-white text-[#0f3a7d] font-bold text-xs py-2 rounded border border-[#0a2a5a] hover:bg-[#e0e7ff] transition flex items-center justify-center space-x-2"
+            class="flex-1 bg-white text-[#0f3a7d] font-bold text-[10px] py-1 rounded border border-[#0a2a5a] hover:bg-[#e0e7ff] transition flex items-center justify-center space-x-1"
             id="btnCatMarmitas"
             data-categoria="marmitas"
             title="Mostrar marmitas"
           >
-            <i class="fas fa-wine-glass-alt"></i>
+            <i class="fas fa-wine-glass-alt text-xs"></i>
             <span>MARMITAS</span>
           </button>
           <button
-            class="flex-1 bg-white text-[#0f3a7d] font-bold text-xs py-2 rounded border border-[#0a2a5a] hover:bg-[#e0e7ff] transition flex items-center justify-center space-x-2"
+            class="flex-1 bg-white text-[#0f3a7d] font-bold text-[10px] py-1 rounded border border-[#0a2a5a] hover:bg-[#e0e7ff] transition flex items-center justify-center space-x-1"
             id="btnCatBebidas"
             data-categoria="bebidas"
             title="Mostrar bebidas"
           >
-            <i class="fas fa-beer"></i>
+            <i class="fas fa-beer text-xs"></i>
             <span>BEBIDAS</span>
           </button>
           <button
-            class="flex-1 bg-white text-[#0f3a7d] font-bold text-xs py-2 rounded border border-[#0a2a5a] hover:bg-[#e0e7ff] transition flex items-center justify-center space-x-2"
+            class="flex-1 bg-white text-[#0f3a7d] font-bold text-[10px] py-1 rounded border border-[#0a2a5a] hover:bg-[#e0e7ff] transition flex items-center justify-center space-x-1"
             id="btnCatPorcoes"
             data-categoria="porcoes"
             title="Mostrar porções"
           >
-            <i class="fas fa-shopping-basket"></i>
+            <i class="fas fa-shopping-basket text-xs"></i>
             <span>PORÇÕES</span>
           </button>
         </div>
         <div
           id="produtosGrid"
-          class="scrollbar-thin scrollable grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3"
+          class="scrollbar-thin scrollable grid grid-cols-3 sm:grid-cols-3 md:grid-cols-5 gap-1"
           tabindex="0"
           aria-label="Lista de produtos para venda"
         ></div>
       </section>
       <section
-        class="hidden flex-1 p-4 space-y-4 bg-white rounded border border-[#0a2a5a] overflow-auto max-h-[calc(100vh-120px)]"
+        class="hidden flex-1 p-2 space-y-2 bg-white rounded border border-[#0a2a5a] overflow-auto max-h-[calc(100vh-100px)]"
         id="comandaCardsContainer"
         aria-live="polite"
         aria-atomic="true"
       >
-        <h2 class="text-[#0f3a7d] font-bold text-lg mb-4 select-text">
+        <h2 class="text-[#0f3a7d] font-bold text-base mb-2 select-text">
           Comandas em Aberto
         </h2>
         <div
-          class="flex items-center space-x-4 w-full md:w-auto relative"
+          class="flex items-center space-x-2 w-full md:w-auto relative"
           style=""
         >
           <span
-            class="absolute -top-2 -right-6 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md hidden"
+            class="absolute -top-2 -right-5 bg-red-600 text-white rounded-full w-4.5 h-4.5 flex items-center justify-center text-xs font-bold shadow-md hidden"
             id="mesaStatusBadge"
             style=""
             title="Mesa com comanda em aberto"
             >!</span
           >
           <button
-            class="bg-[#f97316] text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-md hover:bg-[#ea580c] transition"
+            class="bg-[#f97316] text-white rounded-full w-5.5 h-5.5 flex items-center justify-center text-xs font-bold shadow-md hover:bg-[#ea580c] transition"
             disabled
             id="btnAbrirComandaMesa"
             title="Abrir comanda em aberto da mesa selecionada"
             type="button"
           >
-            <i class="fas fa-folder-open"></i>
+            <i class="fas fa-folder-open text-sm"></i>
           </button>
         </div>
       </section>
       <section
-        class="hidden flex-1 p-4 space-y-3 bg-white rounded border border-[#0a2a5a] overflow-auto max-h-[calc(100vh-120px)]"
+        class="hidden flex-1 p-2 space-y-1 bg-white rounded border border-[#0a2a5a] overflow-auto max-h-[calc(100vh-100px)]"
         id="estoqueSection"
         aria-label="Gestão de estoque"
       >
-        <h2 class="text-[#0f3a7d] font-bold text-lg mb-4 select-text">
+        <h2 class="text-[#0f3a7d] font-bold text-base mb-2 select-text">
           Gestão de Estoque
         </h2>
         <div
-          class="flex flex-wrap gap-2 mb-4"
+          class="flex flex-wrap gap-1 mb-2"
           role="tablist"
           aria-label="Categorias de estoque"
         >
           <button
-            class="px-4 py-2 bg-[#0a2a5a] text-white rounded hover:bg-[#0f3a7d] transition font-semibold active-category"
+            class="px-3 py-1 bg-[#0a2a5a] text-white rounded hover:bg-[#0f3a7d] transition font-semibold active-category text-xs"
             id="btnCatTodosEstoque"
             data-categoria="todos"
             role="tab"
@@ -594,7 +576,7 @@
             >Todos</button
           >
           <button
-            class="px-4 py-2 bg-[#0a2a5a] text-white rounded hover:bg-[#0f3a7d] transition font-semibold"
+            class="px-3 py-1 bg-[#0a2a5a] text-white rounded hover:bg-[#0f3a7d] transition font-semibold text-xs"
             id="btnCatMarmitasEstoque"
             data-categoria="marmitas"
             role="tab"
@@ -603,7 +585,7 @@
             >Marmitas</button
           >
           <button
-            class="px-4 py-2 bg-[#0a2a5a] text-white rounded hover:bg-[#0f3a7d] transition font-semibold"
+            class="px-3 py-1 bg-[#0a2a5a] text-white rounded hover:bg-[#0f3a7d] transition font-semibold text-xs"
             id="btnCatBebidasEstoque"
             data-categoria="bebidas"
             role="tab"
@@ -612,7 +594,7 @@
             >Bebidas</button
           >
           <button
-            class="px-4 py-2 bg-[#0a2a5a] text-white rounded hover:bg-[#0f3a7d] transition font-semibold"
+            class="px-3 py-1 bg-[#0a2a5a] text-white rounded hover:bg-[#0f3a7d] transition font-semibold text-xs"
             id="btnCatPorcoesEstoque"
             data-categoria="porcoes"
             role="tab"
@@ -622,94 +604,94 @@
           >
         </div>
         <div
-          class="space-y-3 max-h-[60vh] overflow-auto scrollbar-thin"
+          class="space-y-1 max-h-[52vh] overflow-auto scrollbar-thin"
           id="estoqueLista"
           tabindex="0"
           aria-label="Lista de produtos em estoque"
         ></div>
       </section>
       <section
-        class="hidden flex-1 p-4 space-y-4 bg-white rounded border border-[#0a2a5a] overflow-auto max-h-[calc(100vh-120px)]"
+        class="hidden flex-1 p-2 space-y-2 bg-white rounded border border-[#0a2a5a] overflow-auto max-h-[calc(100vh-100px)]"
         id="financeiroSection"
         aria-label="Painel financeiro"
       >
-        <h2 class="text-[#0f3a7d] font-bold text-lg mb-6 select-text">
+        <h2 class="text-[#0f3a7d] font-bold text-base mb-4 select-text">
           Painel Financeiro
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
           <div
-            class="bg-[#0f3a7d] text-white rounded p-4 shadow flex flex-col items-center justify-center"
+            class="bg-[#0f3a7d] text-white rounded p-3 shadow flex flex-col items-center justify-center"
             role="region"
             aria-label="Vendas realizadas"
           >
-            <div class="text-4xl font-bold" id="totalVendasCount">0</div>
-            <div class="text-sm mt-1">Vendas Realizadas</div>
+            <div class="text-3xl font-bold" id="totalVendasCount">0</div>
+            <div class="text-xs mt-1">Vendas Realizadas</div>
           </div>
           <div
-            class="bg-[#0f3a7d] text-white rounded p-4 shadow flex flex-col items-center justify-center"
+            class="bg-[#0f3a7d] text-white rounded p-3 shadow flex flex-col items-center justify-center"
             role="region"
             aria-label="Mesas atendidas"
           >
-            <div class="text-4xl font-bold" id="mesasAtendidasCount">0</div>
-            <div class="text-sm mt-1">Mesas Atendidas</div>
+            <div class="text-3xl font-bold" id="mesasAtendidasCount">0</div>
+            <div class="text-xs mt-1">Mesas Atendidas</div>
           </div>
           <div
-            class="bg-[#0f3a7d] text-white rounded p-4 shadow flex flex-col items-center justify-center"
+            class="bg-[#0f3a7d] text-white rounded p-3 shadow flex flex-col items-center justify-center"
             role="region"
             aria-label="Valor total das vendas"
           >
-            <div class="text-4xl font-bold" id="valorTotalVendas">R$ 0,00</div>
-            <div class="text-sm mt-1">Valor Total das Vendas</div>
+            <div class="text-3xl font-bold" id="valorTotalVendas">R$ 0,00</div>
+            <div class="text-xs mt-1">Valor Total das Vendas</div>
           </div>
         </div>
-        <div class="mb-6" role="region" aria-label="Gráfico de vendas por mesa">
-          <canvas id="graficoVendasPorMesa" class="w-full max-w-full h-64"></canvas>
+        <div class="mb-4" role="region" aria-label="Gráfico de vendas por mesa">
+          <canvas id="graficoVendasPorMesa" class="w-full max-w-full h-44"></canvas>
         </div>
-        <div class="mb-6" role="region" aria-label="Gráfico de vendas por categoria">
+        <div class="mb-4" role="region" aria-label="Gráfico de vendas por categoria">
           <canvas
             id="graficoVendasPorCategoria"
-            class="w-full max-w-full h-64"
+            class="w-full max-w-full h-44"
           ></canvas>
         </div>
       </section>
       <section
-        class="hidden flex-1 p-4 space-y-4 bg-white rounded border border-[#0a2a5a] overflow-auto max-h-[calc(100vh-120px)]"
+        class="hidden flex-1 p-2 space-y-2 bg-white rounded border border-[#0a2a5a] overflow-auto max-h-[calc(100vh-100px)]"
         id="deliverySection"
         aria-label="Pedidos para entregas"
       >
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-[#0f3a7d] font-bold text-lg select-text">
+        <div class="flex justify-between items-center mb-2">
+          <h2 class="text-[#0f3a7d] font-bold text-base select-text">
             Entregas
           </h2>
           <span
             id="contadorDelivery"
-            class="bg-green-600 text-white rounded-full px-3 py-1 text-sm font-semibold select-none hidden"
+            class="bg-green-600 text-white rounded-full px-2 py-0.5 text-xs font-semibold select-none hidden"
             aria-live="polite"
             aria-atomic="true"
           ></span>
         </div>
         <div
           id="deliveryPedidosContainer"
-          class="space-y-4 overflow-auto max-h-[calc(100vh-160px)]"
+          class="space-y-2 overflow-auto max-h-[calc(100vh-140px)]"
           tabindex="0"
           aria-label="Lista de entregas"
         ></div>
       </section>
       <aside
-        class="w-full md:w-[400px] bg-[#0a2a5a] p-4 flex flex-col space-y-4 border-l border-[#0a2a5a]"
+        class="w-full md:w-[360px] bg-[#0a2a5a] p-2 flex flex-col space-y-2 border-l border-[#0a2a5a]"
         aria-label="Resumo da comanda e controles"
       >
-        <form class="flex space-x-4 relative items-center" aria-label="Selecionar mesa">
+        <form class="flex space-x-2 relative items-center" aria-label="Selecionar mesa">
           <button
             aria-label="Abrir seleção de mesas ou balcão"
-            class="bg-white border border-[#0a2a5a] rounded px-3 flex items-center justify-center hover:bg-gray-100 transition h-[34px]"
+            class="bg-white border border-[#0a2a5a] rounded px-2 flex items-center justify-center hover:bg-gray-100 transition h-[30px]"
             id="btnAbrirMesas"
             type="button"
           >
-            <i class="fas fa-utensils text-[#0f3a7d]"></i>
+            <i class="fas fa-utensils text-[#0f3a7d] text-sm"></i>
             <span
               id="contadorMesasAbertas"
-              class="ml-2 hidden text-[#0f3a7d] font-semibold text-sm select-none"
+              class="ml-1 hidden text-[#0f3a7d] font-semibold text-xs select-none"
               aria-live="polite"
               aria-atomic="true"
               >0</span
@@ -717,13 +699,13 @@
           </button>
           <div class="flex-1 flex items-center">
             <label
-              class="block text-white text-xs font-semibold mb-1 mr-2"
+              class="block text-white text-xs font-semibold mb-1 mr-1"
               for="codigo"
               style=""
               >Selecionado</label
             >
             <input
-              class="flex-1 rounded border border-[#0a2a5a] px-3 py-2 text-xs font-semibold text-[#0f3a7d]"
+              class="flex-1 rounded border border-[#0a2a5a] px-2 py-1 text-xs font-semibold text-[#0f3a7d]"
               id="codigo"
               placeholder="Selecione uma mesa"
               readonly
@@ -734,7 +716,7 @@
           </div>
         </form>
         <div
-          class="flex-1 bg-white rounded border border-[#0a2a5a] overflow-auto scrollbar-thin max-h-[320px]"
+          class="flex-1 bg-white rounded border border-[#0a2a5a] overflow-auto scrollbar-thin max-h-[280px]"
           role="region"
           aria-label="Itens da comanda"
         >
@@ -744,18 +726,18 @@
           >
             <thead>
               <tr class="bg-[#f97316] text-white" role="row">
-                <th class="text-left px-3 py-2" role="columnheader">Imagem</th>
-                <th class="text-left px-3 py-2" role="columnheader">Produto</th>
-                <th class="w-12 text-center" role="columnheader">Qtde</th>
-                <th class="w-24 text-right pr-3" role="columnheader">Unitário</th>
-                <th class="w-24 text-right pr-3" role="columnheader">Total</th>
-                <th class="w-10 pr-3 text-center" role="columnheader">Remover</th>
+                <th class="text-left px-2 py-1" role="columnheader">Imagem</th>
+                <th class="text-left px-2 py-1" role="columnheader">Produto</th>
+                <th class="w-9 text-center" role="columnheader">Qtde</th>
+                <th class="w-16 text-right pr-2" role="columnheader">Unitário</th>
+                <th class="w-16 text-right pr-2" role="columnheader">Total</th>
+                <th class="w-7 pr-2 text-center" role="columnheader">Remover</th>
               </tr>
             </thead>
             <tbody id="comandaBody" role="rowgroup">
               <tr role="row">
                 <td
-                  class="text-center text-gray-400 py-4 select-text"
+                  class="text-center text-gray-400 py-2 select-text"
                   colspan="6"
                   role="cell"
                 >
@@ -770,9 +752,9 @@
           role="region"
           aria-label="Valor total da comanda"
         >
-          <div class="mb-2">Valor Total</div>
+          <div class="mb-1">Valor Total</div>
           <div
-            class="bg-[#0f3a7d] rounded px-4 py-3 text-right text-3xl border border-[#0a2a5a] select-text"
+            class="bg-[#0f3a7d] rounded px-3 py-1.5 text-right text-2xl border border-[#0a2a5a] select-text"
             id="valorTotal"
             aria-live="polite"
             aria-atomic="true"
@@ -792,19 +774,19 @@
             aria-label="Nome do cliente da comanda"
           />
         </div>
-        <div class="flex space-x-4">
+        <div class="flex space-x-2">
           <button
-            class="flex-1 bg-[#0f3a7d] border border-[#0a2a5a] rounded py-3 text-white font-semibold flex items-center justify-center space-x-3 hover:bg-[#0a2a5a] transition"
+            class="flex-1 bg-[#0f3a7d] border border-[#0a2a5a] rounded py-2 text-white font-semibold flex items-center justify-center space-x-1 hover:bg-[#0a2a5a] transition"
             disabled
             id="btnCancelar"
             type="button"
             aria-disabled="true"
           >
-            <i class="fas fa-times-circle text-lg"></i>
+            <i class="fas fa-times-circle text-base"></i>
             <span>Cancelar</span>
           </button>
           <button
-            class="flex-1 bg-green-700 border border-green-800 rounded py-3 text-white font-semibold flex items-center justify-center space-x-3 hover:bg-green-800 transition"
+            class="flex-1 bg-green-700 border border-green-800 rounded py-2 text-white font-semibold flex items-center justify-center space-x-1 hover:bg-green-800 transition"
             id="btnFinalizar"
             type="button"
           >
@@ -813,7 +795,7 @@
         </div>
         <button
           id="btnImprimirComanda"
-          class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded transition flex items-center justify-center space-x-2"
+          class="mt-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded transition flex items-center justify-center space-x-1"
           type="button"
           aria-label="Imprimir comanda"
         >
@@ -822,7 +804,7 @@
       </aside>
     </div>
     <footer
-      class="flex justify-between items-center bg-[#0a2a5a] rounded-b-lg px-6 py-2 text-white text-xs font-semibold select-none"
+      class="flex justify-between items-center bg-[#0a2a5a] rounded-b-lg px-4 py-1 text-white text-xs font-semibold select-none"
     >
       <div>Versão 1.0.0</div>
       <div>Super Hubz PDV 0.1.1</div>
@@ -892,21 +874,21 @@
             nome: "Marmita P",
             preco: 12.0,
             estoque: 50,
-            img: "marmitape.png",
+            img: "https://placehold.co/80x80/png?text=Marmita+P",
           },
           {
             id: 2,
             nome: "Marmita M",
             preco: 15.0,
             estoque: 40,
-            img: "marmitam.png",
+            img: "https://placehold.co/80x80/png?text=Marmita+M",
           },
           {
             id: 3,
             nome: "Marmita G",
             preco: 20.0,
             estoque: 30,
-            img: "marmitag.png",
+            img: "https://placehold.co/80x80/png?text=Marmita+G",
           },
         ],
         bebidas: [
@@ -915,42 +897,42 @@
             nome: "Coca-Cola Mini 269ml",
             preco: 5.0,
             estoque: 60,
-            img: "cocamini.png",
+            img: "https://placehold.co/80x80/png?text=Coca-Cola+Mini",
           },
           {
             id: 5,
             nome: "Guaraná 310ml",
             preco: 4.0,
             estoque: 55,
-            img: "guaranamini.png",
+            img: "https://placehold.co/80x80/png?text=Guaraná+310ml",
           },
           {
             id: 6,
             nome: "Refriko Pet 500ml",
             preco: 5.0,
             estoque: 50,
-            img: "refriko.png",
+            img: "https://placehold.co/80x80/png?text=Refriko+500ml",
           },
           {
             id: 7,
             nome: "Coca-Cola Vidro 1L",
             preco: 8.0,
             estoque: 45,
-            img: "cocal.png",
+            img: "https://placehold.co/80x80/png?text=Coca-Cola+1L",
           },
           {
             id: 8,
             nome: "Coca-Cola Pet 2L",
             preco: 15.0,
             estoque: 40,
-            img: "coca2l.png",
+            img: "https://placehold.co/80x80/png?text=Coca-Cola+2L",
           },
           {
             id: 9,
             nome: "Tubaína Pet 2L",
             preco: 8.0,
             estoque: 35,
-            img: "tubaina2l.png",
+            img: "https://placehold.co/80x80/png?text=Tubaína+2L",
           },
         ],
         porcoes: [
@@ -959,28 +941,28 @@
             nome: "Carne Assada 100g",
             preco: 9.0,
             estoque: 60,
-            img: "carne.png",
+            img: "https://placehold.co/80x80/png?text=Carne+Assada",
           },
           {
             id: 11,
             nome: "Marmita de Arroz",
             preco: 7.0,
             estoque: 55,
-            img: "arroz.jpeg",
+            img: "https://placehold.co/80x80/png?text=Marmita+Arroz",
           },
           {
             id: 12,
             nome: "Marmita de Feijão",
             preco: 6.0,
             estoque: 50,
-            img: "feijao.jpeg",
+            img: "https://placehold.co/80x80/png?text=Marmita+Feijão",
           },
           {
             id: 13,
             nome: "Marmita de Macarrão",
             preco: 6.0,
             estoque: 45,
-            img: "macarrao.jpeg",
+            img: "https://placehold.co/80x80/png?text=Marmita+Macarrão",
           },
         ],
         todos: [],
@@ -992,7 +974,7 @@
           nome: "Taxa de Entrega",
           preco: taxaEntregaValor,
           estoque: 9999,
-          img: "moto.jpeg",
+          img: "https://placehold.co/80x80/png?text=Entrega",
           isTaxaEntrega: true,
         };
         estoqueDados.todos = [
@@ -1030,35 +1012,12 @@
         return "outros";
       }
 
-      // Melhorias na gestão de estoque: descontar estoque ao adicionar produto na comanda e reverter ao remover
-      function atualizarEstoqueAoAdicionar(nome, quantidade) {
-        for (const cat in estoqueDados) {
-          const produto = estoqueDados[cat].find((p) => p.nome === nome);
-          if (produto) {
-            produto.estoque = Math.max(0, produto.estoque - quantidade);
-            atualizarEstoqueVisual();
-            return;
-          }
-        }
-      }
-
-      function atualizarEstoqueAoRemover(nome, quantidade) {
-        for (const cat in estoqueDados) {
-          const produto = estoqueDados[cat].find((p) => p.nome === nome);
-          if (produto) {
-            produto.estoque += quantidade;
-            atualizarEstoqueVisual();
-            return;
-          }
-        }
-      }
-
       function atualizarEstoqueVisual() {
         const categorias = ["todos", "marmitas", "bebidas", "porcoes"];
         categorias.forEach((categoria) => {
           const lista = document.getElementById("estoqueLista");
           if (!lista) return;
-          if (categoria === "todos") return; // evitar duplicação na lista geral
+          if (categoria === "todos") return;
           if (document.getElementById(`btnCat${categoria.charAt(0).toUpperCase() + categoria.slice(1)}Estoque`).classList.contains("active-category")) {
             renderizarEstoque(categoria);
           }
@@ -1154,13 +1113,13 @@
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className =
-            "relative px-3 py-2 rounded border border-[#0f3a7d] hover:bg-[#0f3a7d] hover:text-white transition font-semibold text-[#0f3a7d] flex items-center justify-between";
+            "relative px-1.5 py-0.5 rounded border border-[#0f3a7d] hover:bg-[#0f3a7d] hover:text-white transition font-semibold text-[#0f3a7d] flex items-center justify-between text-xs";
           btn.dataset.mesa = i;
           btn.textContent = "Mesa " + i;
 
           if (comandasEmAberto["Mesa " + i]) {
             const timerSpan = document.createElement("span");
-            timerSpan.className = "timer ml-2";
+            timerSpan.className = "timer ml-1";
             timerSpan.textContent = "00:00:00";
             btn.appendChild(timerSpan);
             iniciarCronometro("Mesa " + i, timerSpan);
@@ -1249,30 +1208,30 @@
         }
         itens.forEach((item) => {
           const div = document.createElement("div");
-          div.className = "flex items-center justify-between border border-gray-300 rounded p-2";
+          div.className = "flex items-center justify-between border border-gray-300 rounded p-1.5";
           if (item.isTaxaEntrega) {
             div.innerHTML = `
-              <div class="flex items-center space-x-3">
-                <img src="${item.img}" alt="Imagem do produto ${item.nome}, embalagem padrão" class="w-10 h-10 rounded object-cover" />
+              <div class="flex items-center space-x-1.5">
+                <img src="${item.img}" alt="Imagem do produto ${item.nome}, embalagem padrão" class="w-8 h-8 rounded object-cover" />
                 <div>
-                  <div class="font-semibold text-[#0f3a7d]">${item.nome}</div>
-                  <div class="text-sm text-gray-600">Preço: R$ <input type="number" min="0" step="0.01" id="inputTaxaEntrega" class="w-20 bg-gray-100 rounded px-1 py-0.5 text-sm text-gray-800" value="${item.preco.toFixed(2).replace('.', ',')}" /></div>
+                  <div class="font-semibold text-[#0f3a7d] text-xs">${item.nome}</div>
+                  <div class="text-xs text-gray-600">Preço: R$ <input type="number" min="0" step="0.01" id="inputTaxaEntrega" class="w-14 bg-gray-100 rounded px-1 py-0.5 text-xs text-gray-800" value="${item.preco.toFixed(2).replace('.', ',')}" /></div>
                 </div>
               </div>
             `;
           } else {
             div.innerHTML = `
-              <div class="flex items-center space-x-3">
-                <img src="${item.img}" alt="Imagem do produto ${item.nome}, embalagem padrão" class="w-10 h-10 rounded object-cover" />
+              <div class="flex items-center space-x-1.5">
+                <img src="${item.img}" alt="Imagem do produto ${item.nome}, embalagem padrão" class="w-8 h-8 rounded object-cover" />
                 <div>
-                  <div class="font-semibold text-[#0f3a7d]">${item.nome}</div>
-                  <div class="text-sm text-gray-600">Preço: R$ ${item.preco.toFixed(2).replace('.', ',')}</div>
+                  <div class="font-semibold text-[#0f3a7d] text-xs">${item.nome}</div>
+                  <div class="text-xs text-gray-600">Preço: R$ ${item.preco.toFixed(2).replace('.', ',')}</div>
                 </div>
               </div>
-              <div class="flex items-center space-x-2">
-                <button class="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition" data-id="${item.id}" data-categoria="${categoria}" data-action="decrementar">-</button>
-                <span class="w-8 text-center font-semibold text-[#0f3a7d]" id="estoque-qty-${categoria}-${item.id}">${item.estoque}</span>
-                <button class="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition" data-id="${item.id}" data-categoria="${categoria}" data-action="incrementar">+</button>
+              <div class="flex items-center space-x-1">
+                <button class="px-2 py-0.5 bg-red-600 text-white rounded hover:bg-red-700 transition text-xs" data-id="${item.id}" data-categoria="${categoria}" data-action="decrementar">-</button>
+                <span class="w-6 text-center font-semibold text-[#0f3a7d] text-xs" id="estoque-qty-${categoria}-${item.id}">${item.estoque}</span>
+                <button class="px-2 py-0.5 bg-green-600 text-white rounded hover:bg-green-700 transition text-xs" data-id="${item.id}" data-categoria="${categoria}" data-action="incrementar">+</button>
               </div>
             `;
           }
@@ -1358,7 +1317,7 @@
         itens.forEach((item) => {
           const div = document.createElement("div");
           div.className =
-            "cursor-pointer rounded border border-[#0a2a5a] bg-white p-2 flex flex-col items-center justify-center hover:bg-[#e0e7ff] transition select-none";
+            "cursor-pointer rounded border border-[#0a2a5a] bg-white p-1.5 flex flex-col items-center justify-center hover:bg-[#e0e7ff] transition select-none";
           div.dataset.name = item.nome;
           div.dataset.price = item.preco;
           div.dataset.img = item.img;
@@ -1369,9 +1328,9 @@
             `Adicionar produto ${item.nome} ao pedido por R$ ${item.preco.toFixed(2).replace(".", ",")}`
           );
           div.innerHTML = `
-            <img src="${item.img}" alt="Imagem do produto ${item.nome}, embalagem padrão" class="w-16 h-16 object-cover mb-2 rounded" />
-            <span class="text-xs font-semibold text-[#0f3a7d] text-center">${item.nome}</span>
-            <span class="text-xs text-gray-700">R$ ${item.preco.toFixed(2).replace(".", ",")}</span>
+            <img src="${item.img}" alt="Imagem do produto ${item.nome}, embalagem padrão" class="w-12 h-12 object-cover mb-1 rounded" />
+            <span class="text-[9px] font-semibold text-[#0f3a7d] text-center">${item.nome}</span>
+            <span class="text-[9px] text-gray-700">R$ ${item.preco.toFixed(2).replace(".", ",")}</span>
           `;
           div.addEventListener("click", () => {
             adicionarProduto({ name: item.nome, price: item.preco, img: item.img }, 1);
@@ -1428,7 +1387,7 @@
       function atualizarComanda() {
         if (!mesaSelecionada || !comanda[mesaSelecionada]) {
           comandaBody.innerHTML =
-            '<tr><td colspan="6" class="text-center text-gray-400 py-4 select-text">Nenhuma mesa selecionada.</td></tr>';
+            '<tr><td colspan="6" class="text-center text-gray-400 py-2 select-text">Nenhuma mesa selecionada.</td></tr>';
           valorTotalEl.textContent = "R$ 0,00";
           habilitarControles(false);
           return;
@@ -1436,7 +1395,7 @@
         const itens = comanda[mesaSelecionada];
         if (itens.length === 0) {
           comandaBody.innerHTML =
-            '<tr><td colspan="6" class="text-center text-gray-400 py-4 select-text">Nenhum item adicionado.</td></tr>';
+            '<tr><td colspan="6" class="text-center text-gray-400 py-2 select-text">Nenhum item adicionado.</td></tr>';
           valorTotalEl.textContent = "R$ 0,00";
           habilitarControles(true);
           return;
@@ -1450,16 +1409,16 @@
           const tr = document.createElement("tr");
           tr.className = "border-b border-[#f97316]";
           tr.innerHTML = `
-            <td class="px-3 py-2">
-              <img src="${item.img || 'https://placehold.co/40x40/png?text=Sem+Imagem'}" alt="Imagem do produto ${item.name}, embalagem padrão" class="w-10 h-10 rounded object-cover" />
+            <td class="px-2 py-1">
+              <img src="${item.img || 'https://placehold.co/40x40/png?text=Sem+Imagem'}" alt="Imagem do produto ${item.name}, embalagem padrão" class="w-8 h-8 rounded object-cover" />
             </td>
-            <td class="text-left px-3 py-2">${item.name}</td>
-            <td class="text-center">${item.qtde}</td>
-            <td class="text-right pr-3">R$ ${item.price.toFixed(2).replace('.', ',')}</td>
-            <td class="text-right pr-3">R$ ${totalItem.toFixed(2).replace('.', ',')}</td>
-            <td class="text-center pr-3">
+            <td class="text-left px-2 py-1 text-xs">${item.name}</td>
+            <td class="text-center text-xs">${item.qtde}</td>
+            <td class="text-right pr-2 text-xs">R$ ${item.price.toFixed(2).replace('.', ',')}</td>
+            <td class="text-right pr-2 text-xs">R$ ${totalItem.toFixed(2).replace('.', ',')}</td>
+            <td class="text-center pr-2">
               <button class="remove-item" aria-label="Remover item" data-index="${index}" title="Remover item">
-                <i class="fas fa-trash-alt"></i>
+                <i class="fas fa-trash-alt text-xs"></i>
               </button>
             </td>
           `;
@@ -1471,7 +1430,6 @@
           btn.addEventListener("click", () => {
             const idx = parseInt(btn.dataset.index);
             if (isNaN(idx)) return;
-            // Atualizar estoque ao remover
             const itemRemovido = comanda[mesaSelecionada][idx];
             if (itemRemovido && !itemRemovido.isTaxaEntrega) {
               for (const cat in estoqueDados) {
@@ -1496,7 +1454,6 @@
           return;
         }
         if (!produto.isTaxaEntrega) {
-          // Verificar estoque disponível
           for (const cat in estoqueDados) {
             const prod = estoqueDados[cat].find((p) => p.nome === produto.name);
             if (prod) {
@@ -1511,7 +1468,6 @@
         const itens = comanda[mesaSelecionada];
         const index = itens.findIndex((i) => i.name === produto.name);
         if (index >= 0) {
-          // Verificar estoque para incremento
           if (!produto.isTaxaEntrega) {
             for (const cat in estoqueDados) {
               const prod = estoqueDados[cat].find((p) => p.nome === produto.name);
@@ -1529,7 +1485,6 @@
         } else {
           itens.push({ ...produto, qtde: quantidade });
         }
-        // Atualizar estoque ao adicionar
         if (!produto.isTaxaEntrega) {
           for (const cat in estoqueDados) {
             const prod = estoqueDados[cat].find((p) => p.nome === produto.name);
@@ -1564,7 +1519,6 @@
         texto += `\nTotal: R$ ${total.toFixed(2).replace(".", ",")}`;
 
         if (navigator.share && window.innerWidth <= 767) {
-          // Mobile: usar Web Share API para compartilhar texto
           navigator.share({
             title: `Comanda - ${mesaSelecionada}`,
             text: texto,
@@ -1572,7 +1526,6 @@
             alert("Erro ao compartilhar: " + error);
           });
         } else {
-          // Desktop: abrir janela de impressão
           const printWindow = window.open("", "", "width=400,height=600");
           printWindow.document.write('<pre style="font-family:sans-serif; font-size:16px;">' + texto + "</pre>");
           printWindow.document.close();
@@ -1584,7 +1537,7 @@
       function armazenarComandaCard(mesa, itens) {
         if (!itens || itens.length === 0) return;
         const card = document.createElement("div");
-        card.className = "border border-[#0f3a7d] rounded p-4 shadow-md relative";
+        card.className = "border border-[#0f3a7d] rounded p-2 shadow-md relative";
 
         let itensHtml = "";
         let total = 0;
@@ -1592,13 +1545,13 @@
           const totalItem = item.price * item.qtde;
           total += totalItem;
           itensHtml += `
-            <div class="flex items-center space-x-3 mb-2">
-              <img src="${item.img || 'https://placehold.co/40x40/png?text=Sem+Imagem'}" alt="Imagem do produto ${item.name}, embalagem padrão" class="w-10 h-10 rounded object-cover" />
+            <div class="flex items-center space-x-2 mb-1">
+              <img src="${item.img || 'https://placehold.co/40x40/png?text=Sem+Imagem'}" alt="Imagem do produto ${item.name}, embalagem padrão" class="w-8 h-8 rounded object-cover" />
               <div class="flex-1">
-                <div class="font-semibold text-[#0f3a7d]">${item.name}</div>
-                <div class="text-sm text-gray-600">Qtd: ${item.qtde} x R$ ${item.price.toFixed(2).replace(".", ",")}</div>
+                <div class="font-semibold text-[#0f3a7d] text-xs">${item.name}</div>
+                <div class="text-[9px] text-gray-600">Qtd: ${item.qtde} x R$ ${item.price.toFixed(2).replace(".", ",")}</div>
               </div>
-              <div class="font-semibold text-[#0f3a7d]">R$ ${totalItem.toFixed(2).replace(".", ",")}</div>
+              <div class="font-semibold text-[#0f3a7d] text-xs">R$ ${totalItem.toFixed(2).replace(".", ",")}</div>
             </div>
           `;
         });
@@ -1606,18 +1559,18 @@
         const clienteNome = clientesComanda[mesa] || "";
 
         card.innerHTML = `
-          <h3 class="text-lg font-bold text-[#0f3a7d] mb-1 select-text">Comanda - ${mesa}</h3>
-          <input type="text" class="editable-cliente mb-3" value="${clienteNome}" placeholder="Nome do cliente" aria-label="Nome do cliente da comanda" />
+          <h3 class="text-sm font-bold text-[#0f3a7d] mb-1 select-text">Comanda - ${mesa}</h3>
+          <input type="text" class="editable-cliente mb-1" value="${clienteNome}" placeholder="Nome do cliente" aria-label="Nome do cliente da comanda" />
           ${itensHtml}
-          <div class="text-right font-bold text-[#0f3a7d] border-t border-gray-300 pt-2 mb-4">Total: R$ ${total.toFixed(2).replace(".", ",")}</div>
-          <div class="flex space-x-2 justify-end" style="">
-            <button type="button" class="btn-em-aberto bg-[#2563eb] hover:bg-[#1e40af] text-white text-xs font-semibold px-3 py-1 rounded shadow transition" aria-label="Em aberto comanda">
+          <div class="text-right font-bold text-[#0f3a7d] border-t border-gray-300 pt-1 mb-2 text-xs">Total: R$ ${total.toFixed(2).replace(".", ",")}</div>
+          <div class="flex space-x-1 justify-end" style="">
+            <button type="button" class="btn-em-aberto bg-[#2563eb] hover:bg-[#1e40af] text-white text-xs font-semibold px-2 py-0.5 rounded shadow transition" aria-label="Em aberto comanda">
               Em Aberto
             </button>
-            <button type="button" id="btnImprimirComandaCard" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1 rounded shadow transition" aria-label="Imprimir comanda">
+            <button type="button" id="btnImprimirComandaCard" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-2 py-0.5 rounded shadow transition" aria-label="Imprimir comanda">
               Imprimir
             </button>
-            <button type="button" class="btn-encerrar bg-green-700 hover:bg-green-800 text-white text-xs font-semibold px-3 py-1 rounded shadow transition" aria-label="Encerrar comanda">
+            <button type="button" class="btn-encerrar bg-green-700 hover:bg-green-800 text-white text-xs font-semibold px-2 py-0.5 rounded shadow transition" aria-label="Encerrar comanda">
               Encerrar
             </button>
           </div>
@@ -1700,7 +1653,6 @@
           texto += `\nTotal: R$ ${totalPrint.toFixed(2).replace(".", ",")}`;
 
           if (navigator.share && window.innerWidth <= 767) {
-            // Mobile: usar Web Share API para compartilhar texto
             navigator.share({
               title: `Comanda - ${mesa}`,
               text: texto,
@@ -1708,7 +1660,6 @@
               alert("Erro ao compartilhar: " + error);
             });
           } else {
-            // Desktop: abrir janela de impressão
             const printWindow = window.open("", "", "width=400,height=600");
             printWindow.document.write('<pre style="font-family:sans-serif; font-size:16px;">' + texto + "</pre>");
             printWindow.document.close();
@@ -1782,19 +1733,19 @@
         }
         pedidosAbertos.forEach((pedido, idx) => {
           const card = document.createElement("div");
-          card.className = "border border-[#0f3a7d] rounded p-4 shadow-md relative";
+          card.className = "border border-[#0f3a7d] rounded p-2 shadow-md relative";
 
           let itensHtml = "";
           pedido.itens.forEach((item) => {
             const totalItem = item.price * item.qtde;
             itensHtml += `
-              <div class="flex items-center space-x-3 mb-2">
-                <img src="${item.img || 'https://placehold.co/40x40/png?text=Sem+Imagem'}" alt="Imagem do produto ${item.name}, embalagem padrão" class="w-10 h-10 rounded object-cover" />
+              <div class="flex items-center space-x-2 mb-1">
+                <img src="${item.img || 'https://placehold.co/40x40/png?text=Sem+Imagem'}" alt="Imagem do produto ${item.name}, embalagem padrão" class="w-8 h-8 rounded object-cover" />
                 <div class="flex-1">
-                  <div class="font-semibold text-[#0f3a7d]">${item.name}</div>
-                  <div class="text-sm text-gray-600">Qtd: ${item.qtde} x R$ ${item.price.toFixed(2).replace(".", ",")}</div>
+                  <div class="font-semibold text-[#0f3a7d] text-xs">${item.name}</div>
+                  <div class="text-[9px] text-gray-600">Qtd: ${item.qtde} x R$ ${item.price.toFixed(2).replace(".", ",")}</div>
                 </div>
-                <div class="font-semibold text-[#0f3a7d]">R$ ${totalItem.toFixed(2).replace(".", ",")}</div>
+                <div class="font-semibold text-[#0f3a7d] text-xs">R$ ${totalItem.toFixed(2).replace(".", ",")}</div>
               </div>
             `;
           });
@@ -1804,17 +1755,17 @@
           const clienteNomeDisplay = pedido.clienteNome ? `<div><strong>Cliente:</strong> ${pedido.clienteNome}</div>` : "";
 
           card.innerHTML = `
-            <h3 class="text-lg font-bold text-[#0f3a7d] mb-3 select-text">Pedidos - <input type="text" class="editable-mesa" value="${pedido.mesa}" aria-label="Editar nome da mesa"></h3>
+            <h3 class="text-sm font-bold text-[#0f3a7d] mb-1 select-text">Pedidos - <input type="text" class="editable-mesa" value="${pedido.mesa}" aria-label="Editar nome da mesa"></h3>
             ${itensHtml}
             ${clienteNomeDisplay}
-            <div class="text-right font-bold text-[#0f3a7d] border-t border-gray-300 pt-2 mb-4">Total: R$ ${pedido.total.toFixed(2).replace(".", ",")}</div>
-            <div class="flex space-x-2 justify-end" style="">
+            <div class="text-right font-bold text-[#0f3a7d] border-t border-gray-300 pt-1 mb-2 text-xs">Total: R$ ${pedido.total.toFixed(2).replace(".", ",")}</div>
+            <div class="flex space-x-1 justify-end" style="">
               ${
                 !entregue
-                  ? '<button type="button" class="btn-entregar bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-semibold px-3 py-1 rounded shadow transition" aria-label="Entregar pedido">Entregar</button>'
+                  ? '<button type="button" class="btn-entregar bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-semibold px-2 py-0.5 rounded shadow transition" aria-label="Entregar pedido">Entregar</button>'
                   : ""
               }
-              <button type="button" class="btn-remover-pedido bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-3 py-1 rounded shadow transition" aria-label="Remover pedido">
+              <button type="button" class="btn-remover-pedido bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-2 py-0.5 rounded shadow transition" aria-label="Remover pedido">
                 Remover
               </button>
             </div>
@@ -1882,19 +1833,19 @@
         }
         pedidosDelivery.forEach((pedido, idx) => {
           const card = document.createElement("div");
-          card.className = "border border-[#0f3a7d] rounded p-4 shadow-md relative";
+          card.className = "border border-[#0f3a7d] rounded p-2 shadow-md relative";
 
           let itensHtml = "";
           pedido.itens.forEach((item) => {
             const totalItem = item.price * item.qtde;
             itensHtml += `
-              <div class="flex items-center space-x-3 mb-2">
-                <img src="${item.img || 'https://placehold.co/40x40/png?text=Sem+Imagem'}" alt="Imagem do produto ${item.name}, embalagem padrão" class="w-10 h-10 rounded object-cover" />
+              <div class="flex items-center space-x-2 mb-1">
+                <img src="${item.img || 'https://placehold.co/40x40/png?text=Sem+Imagem'}" alt="Imagem do produto ${item.name}, embalagem padrão" class="w-8 h-8 rounded object-cover" />
                 <div class="flex-1">
-                  <div class="font-semibold text-[#0f3a7d]">${item.name}</div>
-                  <div class="text-sm text-gray-600">Qtd: ${item.qtde} x R$ ${item.price.toFixed(2).replace(".", ",")}</div>
+                  <div class="font-semibold text-[#0f3a7d] text-xs">${item.name}</div>
+                  <div class="text-[9px] text-gray-600">Qtd: ${item.qtde} x R$ ${item.price.toFixed(2).replace(".", ",")}</div>
                 </div>
-                <div class="font-semibold text-[#0f3a7d]">R$ ${totalItem.toFixed(2).replace(".", ",")}</div>
+                <div class="font-semibold text-[#0f3a7d] text-xs">R$ ${totalItem.toFixed(2).replace(".", ",")}</div>
               </div>
             `;
           });
@@ -1905,23 +1856,23 @@
 
           let printButtonHtml = "";
           if (temInfoEntrega) {
-            printButtonHtml = `<button type="button" class="btn-imprimir-delivery bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1 rounded shadow transition" aria-label="Imprimir entrega">Imprimir</button>`;
+            printButtonHtml = `<button type="button" class="btn-imprimir-delivery bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-2 py-0.5 rounded shadow transition" aria-label="Imprimir entrega">Imprimir</button>`;
           }
 
           card.innerHTML = `
-            <h3 class="text-lg font-bold text-[#0f3a7d] mb-3 select-text">Entregas - ${pedido.mesa}</h3>
+            <h3 class="text-sm font-bold text-[#0f3a7d] mb-1 select-text">Entregas - ${pedido.mesa}</h3>
             ${itensHtml}
-            <div class="mb-2">
+            <div class="mb-1 text-[9px]">
               <strong>Cliente:</strong> ${pedido.clienteNome || '<em>Não informado</em>'}<br/>
               <strong>Endereço Coleta:</strong> ${pedido.enderecoColeta || '<em>Não informado</em>'}<br/>
               <strong>Endereço Entrega:</strong> ${pedido.enderecoEntrega || '<em>Não informado</em>'}
             </div>
-            <div class="text-right font-bold text-[#0f3a7d] border-t border-gray-300 pt-2 mb-4">Total: R$ ${pedido.total.toFixed(2).replace(".", ",")}</div>
+            <div class="text-right font-bold text-[#0f3a7d] border-t border-gray-300 pt-1 mb-2 text-xs">Total: R$ ${pedido.total.toFixed(2).replace(".", ",")}</div>
             <div class="flex space-x-2 justify-between items-center">
-              <div id="rateInfo-${idx}" class="text-sm text-gray-700">Consultando taxas de entrega...</div>
-              <div class="flex space-x-2">
-                ${status === "pendente" ? `<button type="button" class="btn-editar-delivery bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-semibold px-3 py-1 rounded shadow transition" aria-label="Editar entrega">Editar</button>` : ''}
-                <button type="button" class="btn-remover-delivery bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-3 py-1 rounded shadow transition" aria-label="Remover entrega">Remover</button>
+              <div id="rateInfo-${idx}" class="text-xs text-gray-700">Consultando taxas de entrega...</div>
+              <div class="flex space-x-1">
+                ${status === "pendente" ? `<button type="button" class="btn-editar-delivery bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-semibold px-2 py-0.5 rounded shadow transition" aria-label="Editar entrega">Editar</button>` : ''}
+                <button type="button" class="btn-remover-delivery bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-2 py-0.5 rounded shadow transition" aria-label="Remover entrega">Remover</button>
                 ${printButtonHtml}
               </div>
             </div>
@@ -1957,7 +1908,6 @@
               texto += `\nTotal: R$ ${totalPrint.toFixed(2).replace(".", ",")}`;
 
               if (navigator.share && window.innerWidth <= 767) {
-                // Mobile: usar Web Share API para compartilhar texto
                 navigator.share({
                   title: `Entrega - ${pedido.mesa}`,
                   text: texto,
@@ -1965,7 +1915,6 @@
                   alert("Erro ao compartilhar: " + error);
                 });
               } else {
-                // Desktop: abrir janela de impressão
                 const printWindow = window.open("", "", "width=400,height=600");
                 printWindow.document.write('<pre style="font-family:sans-serif; font-size:16px;">' + texto + "</pre>");
                 printWindow.document.close();
@@ -2079,7 +2028,6 @@
           alert("Por favor, insira o texto do pedido.");
           return;
         }
-        // Detectar se o texto contém endereço de entrega e contato para enviar direto para aba entregas
         const enderecoRegex = /Endereço:\s*(.+)/i;
         const contatoRegex = /Contato:\s*(\d{8,15})/i;
         const observacoesRegex = /Observações:\s*(.+)/i;
@@ -2090,7 +2038,6 @@
         const observacoesMatch = texto.match(observacoesRegex);
         const formaPagamentoMatch = texto.match(formaPagamentoRegex);
 
-        // Extrair itens do pedido
         const linhas = texto.split("\n");
         const itens = [];
         const regexItem = /^\*(.+?)\*\s+x(\d+)\s+-\s+R\$ ?([\d.,]+)$/i;
@@ -2118,15 +2065,12 @@
           return;
         }
 
-        // Se endereço de entrega existe, enviar direto para aba entregas
         if (enderecoMatch) {
-          // Criar pedido para entregas
           const enderecoEntrega = enderecoMatch[1].trim();
           const contato = contatoMatch ? contatoMatch[1].trim() : "";
           const clienteNome = observacoesMatch ? observacoesMatch[1].trim() : "";
           const formaPagamento = formaPagamentoMatch ? formaPagamentoMatch[1].trim() : "";
 
-          // Criar objeto pedido delivery
           const pedidoDelivery = {
             mesa: "Delivery",
             itens,
@@ -2146,7 +2090,6 @@
           return;
         }
 
-        // Caso contrário, criar comanda normal na mesa selecionada
         if (!mesaSelecionada) {
           alert("Selecione uma mesa antes de criar a comanda.");
           return;
@@ -2354,46 +2297,46 @@
         const key = e.key.toLowerCase();
         switch (key) {
           case "t":
-            adicionarProduto({ name: "Taxa de Entrega", price: taxaEntregaValor, img: "moto.jpeg", isTaxaEntrega: true }, 1);
+            adicionarProduto({ name: "Taxa de Entrega", price: taxaEntregaValor, img: "https://placehold.co/80x80/png?text=Entrega", isTaxaEntrega: true }, 1);
             break;
           case "p":
-            adicionarProduto({ name: "Marmita P", price: 12.0, img: "marmitape.png" }, 1);
+            adicionarProduto({ name: "Marmita P", price: 12.0, img: "https://placehold.co/80x80/png?text=Marmita+P" }, 1);
             break;
           case "m":
-            adicionarProduto({ name: "Marmita M", price: 15.0, img: "marmitam.png" }, 1);
+            adicionarProduto({ name: "Marmita M", price: 15.0, img: "https://placehold.co/80x80/png?text=Marmita+M" }, 1);
             break;
           case "g":
-            adicionarProduto({ name: "Marmita G", price: 20.0, img: "marmitag.png" }, 1);
+            adicionarProduto({ name: "Marmita G", price: 20.0, img: "https://placehold.co/80x80/png?text=Marmita+G" }, 1);
             break;
           case "1":
-            adicionarProduto({ name: "Coca-Cola Mini 269ml", price: 5.0, img: "cocamini.png" }, 1);
+            adicionarProduto({ name: "Coca-Cola Mini 269ml", price: 5.0, img: "https://placehold.co/80x80/png?text=Coca-Cola+Mini" }, 1);
             break;
           case "2":
-            adicionarProduto({ name: "Guaraná 310ml", price: 4.0, img: "guaranamini.png" }, 1);
+            adicionarProduto({ name: "Guaraná 310ml", price: 4.0, img: "https://placehold.co/80x80/png?text=Guaraná+310ml" }, 1);
             break;
           case "3":
-            adicionarProduto({ name: "Refriko Pet 500ml", price: 5.0, img: "refriko.png" }, 1);
+            adicionarProduto({ name: "Refriko Pet 500ml", price: 5.0, img: "https://placehold.co/80x80/png?text=Refriko+500ml" }, 1);
             break;
           case "4":
-            adicionarProduto({ name: "Coca-Cola Vidro 1L", price: 8.0, img: "cocal.png" }, 1);
+            adicionarProduto({ name: "Coca-Cola Vidro 1L", price: 8.0, img: "https://placehold.co/80x80/png?text=Coca-Cola+1L" }, 1);
             break;
           case "5":
-            adicionarProduto({ name: "Coca-Cola Pet 2L", price: 15.0, img: "coca2l.png" }, 1);
+            adicionarProduto({ name: "Coca-Cola Pet 2L", price: 15.0, img: "https://placehold.co/80x80/png?text=Coca-Cola+2L" }, 1);
             break;
           case "6":
-            adicionarProduto({ name: "Tubaína Pet 2L", price: 8.0, img: "tubaina2l.png" }, 1);
+            adicionarProduto({ name: "Tubaína Pet 2L", price: 8.0, img: "https://placehold.co/80x80/png?text=Tubaína+2L" }, 1);
             break;
           case "7":
-            adicionarProduto({ name: "Carne Assada 100g", price: 9.0, img: "carne.png" }, 1);
+            adicionarProduto({ name: "Carne Assada 100g", price: 9.0, img: "https://placehold.co/80x80/png?text=Carne+Assada" }, 1);
             break;
           case "8":
-            adicionarProduto({ name: "Marmita de Arroz", price: 7.0, img: "arroz.jpeg" }, 1);
+            adicionarProduto({ name: "Marmita de Arroz", price: 7.0, img: "https://placehold.co/80x80/png?text=Marmita+Arroz" }, 1);
             break;
           case "9":
-            adicionarProduto({ name: "Marmita de Feijão", price: 6.0, img: "feijao.jpeg" }, 1);
+            adicionarProduto({ name: "Marmita de Feijão", price: 6.0, img: "https://placehold.co/80x80/png?text=Marmita+Feijão" }, 1);
             break;
           case "0":
-            adicionarProduto({ name: "Marmita de Macarrão", price: 6.0, img: "macarrao.jpeg" }, 1);
+            adicionarProduto({ name: "Marmita de Macarrão", price: 6.0, img: "https://placehold.co/80x80/png?text=Marmita+Macarrão" }, 1);
             break;
         }
       });
