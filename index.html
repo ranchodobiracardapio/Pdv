@@ -196,6 +196,10 @@
         max-height: 180px !important;
         overflow-y: auto !important;
       }
+      /* Hide "Todos" category button on mobile */
+      #btnCatTodos {
+        display: none !important;
+      }
     }
     .editable-mesa {
       border: none;
@@ -874,21 +878,21 @@
             nome: "Marmita P",
             preco: 12.0,
             estoque: 50,
-            img: "marmitap.png",
+            img: "https://placehold.co/80x80/png?text=Marmita+P",
           },
           {
             id: 2,
             nome: "Marmita M",
             preco: 15.0,
             estoque: 40,
-            img: "marmitam.png",
+            img: "https://placehold.co/80x80/png?text=Marmita+M",
           },
           {
             id: 3,
             nome: "Marmita G",
             preco: 20.0,
             estoque: 30,
-            img: "marmitag.png",
+            img: "https://placehold.co/80x80/png?text=Marmita+G",
           },
         ],
         bebidas: [
@@ -897,42 +901,42 @@
             nome: "Coca-Cola Mini 269ml",
             preco: 5.0,
             estoque: 60,
-            img: "cocamini.png",
+            img: "https://placehold.co/80x80/png?text=Coca-Cola+Mini",
           },
           {
             id: 5,
             nome: "Guaraná 310ml",
             preco: 4.0,
             estoque: 55,
-            img: "guaranamini.png",
+            img: "https://placehold.co/80x80/png?text=Guaraná+310ml",
           },
           {
             id: 6,
             nome: "Refriko Pet 500ml",
             preco: 5.0,
             estoque: 50,
-            img: "refriko.png",
+            img: "https://placehold.co/80x80/png?text=Refriko+500ml",
           },
           {
             id: 7,
             nome: "Coca-Cola Vidro 1L",
             preco: 8.0,
             estoque: 45,
-            img: "cocal.png",
+            img: "https://placehold.co/80x80/png?text=Coca-Cola+1L",
           },
           {
             id: 8,
             nome: "Coca-Cola Pet 2L",
             preco: 15.0,
             estoque: 40,
-            img: "coca2l.png",
+            img: "https://placehold.co/80x80/png?text=Coca-Cola+2L",
           },
           {
             id: 9,
             nome: "Tubaína Pet 2L",
             preco: 8.0,
             estoque: 35,
-            img: "tubaina2l.png",
+            img: "https://placehold.co/80x80/png?text=Tubaína+2L",
           },
         ],
         porcoes: [
@@ -941,28 +945,28 @@
             nome: "Carne Assada 100g",
             preco: 9.0,
             estoque: 60,
-            img: "carne.png",
+            img: "https://placehold.co/80x80/png?text=Carne+Assada",
           },
           {
             id: 11,
             nome: "Marmita de Arroz",
             preco: 7.0,
             estoque: 55,
-            img: "arroz.jpeg",
+            img: "https://placehold.co/80x80/png?text=Marmita+Arroz",
           },
           {
             id: 12,
             nome: "Marmita de Feijão",
             preco: 6.0,
             estoque: 50,
-            img: "feijao.jpeg",
+            img: "https://placehold.co/80x80/png?text=Marmita+Feijão",
           },
           {
             id: 13,
             nome: "Marmita de Macarrão",
             preco: 6.0,
             estoque: 45,
-            img: "macarrao.jpeg",
+            img: "https://placehold.co/80x80/png?text=Marmita+Macarrão",
           },
         ],
         todos: [],
@@ -974,7 +978,7 @@
           nome: "Taxa de Entrega",
           preco: taxaEntregaValor,
           estoque: 9999,
-          img: "moto.jpeg",
+          img: "https://placehold.co/80x80/png?text=Entrega",
           isTaxaEntrega: true,
         };
         estoqueDados.todos = [
@@ -1311,7 +1315,8 @@
         } else if (categoria === "todos") {
           itens = estoqueDados.todos;
         }
-        if (categoria === "todos" && itens.length > 6) {
+        // Show all items for "todos" on desktop, no slice
+        if (categoria !== "todos" && itens.length > 6) {
           itens = itens.slice(0, 6);
         }
         itens.forEach((item) => {
@@ -1801,6 +1806,7 @@
                 enderecoColeta: "Rua Báltico 79 Jardim Presidente",
                 enderecoEntrega: "",
                 status: "pendente",
+                telefone: pedido.telefone || "",
               });
               pedidosAbertos.splice(idx, 1);
               atualizarBadgePedidos();
@@ -1859,11 +1865,18 @@
             printButtonHtml = `<button type="button" class="btn-imprimir-delivery bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-2 py-0.5 rounded shadow transition" aria-label="Imprimir entrega">Imprimir</button>`;
           }
 
+          // Add "Despachar" button for delivery orders
+          let despacharButtonHtml = "";
+          if (temInfoEntrega && status === "pendente") {
+            despacharButtonHtml = `<button type="button" class="btn-despachar-delivery bg-green-600 hover:bg-green-700 text-white text-xs font-semibold px-2 py-0.5 rounded shadow transition" aria-label="Despachar entrega">Despachar</button>`;
+          }
+
           card.innerHTML = `
             <h3 class="text-sm font-bold text-[#0f3a7d] mb-1 select-text">Entregas - ${pedido.mesa}</h3>
             ${itensHtml}
             <div class="mb-1 text-[9px]">
               <strong>Cliente:</strong> ${pedido.clienteNome || '<em>Não informado</em>'}<br/>
+              <strong>Telefone:</strong> ${pedido.telefone || '<em>Não informado</em>'}<br/>
               <strong>Endereço Coleta:</strong> ${pedido.enderecoColeta || '<em>Não informado</em>'}<br/>
               <strong>Endereço Entrega:</strong> ${pedido.enderecoEntrega || '<em>Não informado</em>'}
             </div>
@@ -1874,6 +1887,7 @@
                 ${status === "pendente" ? `<button type="button" class="btn-editar-delivery bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-semibold px-2 py-0.5 rounded shadow transition" aria-label="Editar entrega">Editar</button>` : ''}
                 <button type="button" class="btn-remover-delivery bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-2 py-0.5 rounded shadow transition" aria-label="Remover entrega">Remover</button>
                 ${printButtonHtml}
+                ${despacharButtonHtml}
               </div>
             </div>
           `;
@@ -1898,7 +1912,7 @@
                 alert("Nenhuma entrega para imprimir.");
                 return;
               }
-              let texto = `Entrega - ${pedido.mesa}\n\nCliente: ${pedido.clienteNome}\nEndereço Coleta: ${pedido.enderecoColeta}\nEndereço Entrega: ${pedido.enderecoEntrega}\n\nItens:\n`;
+              let texto = `Entrega - ${pedido.mesa}\n\nCliente: ${pedido.clienteNome}\nTelefone: ${pedido.telefone || 'Não informado'}\nEndereço Coleta: ${pedido.enderecoColeta}\nEndereço Entrega: ${pedido.enderecoEntrega}\n\nItens:\n`;
               let totalPrint = 0;
               pedido.itens.forEach((item) => {
                 const totalItem = item.price * item.qtde;
@@ -1921,6 +1935,20 @@
                 printWindow.focus();
                 printWindow.print();
               }
+            });
+          }
+
+          const btnDespachar = card.querySelector(".btn-despachar-delivery");
+          if (btnDespachar) {
+            btnDespachar.addEventListener("click", () => {
+              const telefone = pedido.telefone || "";
+              if (!telefone) {
+                alert("Telefone do cliente não informado para envio da mensagem.");
+                return;
+              }
+              const mensagem = encodeURIComponent("Seu pedido ficou pronto já está saindo para entrega!");
+              const url = `https://wa.me/${telefone}?text=${mensagem}`;
+              window.open(url, "_blank");
             });
           }
 
@@ -2028,58 +2056,87 @@
           alert("Por favor, insira o texto do pedido.");
           return;
         }
-        const enderecoRegex = /Endereço:\s*(.+)/i;
-        const contatoRegex = /Contato:\s*(\d{8,15})/i;
-        const observacoesRegex = /Observações:\s*(.+)/i;
-        const formaPagamentoRegex = /Forma de pagamento:\s*(.+)/i;
 
+        // Parsing the provided example format:
+        // *Rancho do Bira - Nova Lima*
+        // *Cliente:* MATHEUS NEVES
+        // *Telefone:* 67992321321
+        // *Endereço:* Rua Dr Dolor Ferreira 55
+        // *Bairro:* Monte Castelo
+        // *3 x Marmita P*
+        // Preço unitário: R$ 12,00
+        // ...
+        // *Cupom aplicado:* 2% de Desconto para Novos Clientes
+        // *Total:* R$ 206,92
+
+        // Extract client info
+        const clienteRegex = /^\*Cliente:\*\s*(.+)$/im;
+        const telefoneRegex = /^\*Telefone:\*\s*(\d{8,15})$/im;
+        const enderecoRegex = /^\*Endereço:\*\s*(.+)$/im;
+        const bairroRegex = /^\*Bairro:\*\s*(.+)$/im;
+        const cupomRegex = /^\*Cupom aplicado:\*\s*(.+)$/im;
+        const totalRegex = /^\*Total:\*\s*R\$ ?([\d.,]+)/im;
+
+        const clienteMatch = texto.match(clienteRegex);
+        const telefoneMatch = texto.match(telefoneRegex);
         const enderecoMatch = texto.match(enderecoRegex);
-        const contatoMatch = texto.match(contatoRegex);
-        const observacoesMatch = texto.match(observacoesRegex);
-        const formaPagamentoMatch = texto.match(formaPagamentoRegex);
+        const bairroMatch = texto.match(bairroRegex);
+        const cupomMatch = texto.match(cupomRegex);
+        const totalMatch = texto.match(totalRegex);
 
+        const clienteNome = clienteMatch ? clienteMatch[1].trim() : "";
+        const telefone = telefoneMatch ? telefoneMatch[1].trim() : "";
+        const endereco = enderecoMatch ? enderecoMatch[1].trim() : "";
+        const bairro = bairroMatch ? bairroMatch[1].trim() : "";
+        const cupom = cupomMatch ? cupomMatch[1].trim() : "";
+        const totalTexto = totalMatch ? totalMatch[1].replace(",", ".") : null;
+        const totalPedido = totalTexto ? parseFloat(totalTexto) : null;
+
+        // Parse items: lines with "*<qty> x <product>*" and next line "Preço unitário: R$ <price>"
         const linhas = texto.split("\n");
         const itens = [];
-        const regexItem = /^\*(.+?)\*\s+x(\d+)\s+-\s+R\$ ?([\d.,]+)$/i;
-        for (const linha of linhas) {
-          const match = linha.trim().match(regexItem);
-          if (match) {
-            const nome = match[1].trim();
-            const qtde = parseInt(match[2]);
-            const precoStr = match[3].replace(",", ".");
-            const preco = parseFloat(precoStr);
-            if (isNaN(qtde) || isNaN(preco)) continue;
+        for (let i = 0; i < linhas.length; i++) {
+          const linha = linhas[i].trim();
+          const itemMatch = linha.match(/^\*(\d+)\s+x\s+(.+)\*$/i);
+          if (itemMatch) {
+            const qtde = parseInt(itemMatch[1]);
+            const nomeProduto = itemMatch[2].trim();
+            // Next line should be price unitario
+            const nextLine = linhas[i + 1] ? linhas[i + 1].trim() : "";
+            const precoMatch = nextLine.match(/^Preço unitário:\s*R\$ ?([\d.,]+)/i);
+            let preco = 0;
+            if (precoMatch) {
+              preco = parseFloat(precoMatch[1].replace(",", "."));
+              i++; // skip next line as processed
+            }
             let img = "https://placehold.co/40x40/png?text=Sem+Imagem";
             for (const cat in estoqueDados) {
-              const prod = estoqueDados[cat].find((p) => p.nome.toLowerCase() === nome.toLowerCase());
+              const prod = estoqueDados[cat].find((p) => p.nome.toLowerCase() === nomeProduto.toLowerCase());
               if (prod) {
                 img = prod.img;
                 break;
               }
             }
-            itens.push({ name: nome, qtde, price: preco, img });
+            itens.push({ name: nomeProduto, qtde, price: preco, img });
           }
         }
+
         if (itens.length === 0) {
           alert("Nenhum item válido encontrado no texto.");
           return;
         }
 
-        if (enderecoMatch) {
-          const enderecoEntrega = enderecoMatch[1].trim();
-          const contato = contatoMatch ? contatoMatch[1].trim() : "";
-          const clienteNome = observacoesMatch ? observacoesMatch[1].trim() : "";
-          const formaPagamento = formaPagamentoMatch ? formaPagamentoMatch[1].trim() : "";
-
+        // If endereco and telefone present, create delivery order
+        if (endereco && telefone) {
           const pedidoDelivery = {
             mesa: "Delivery",
             itens,
-            total: calcularTotal(itens),
+            total: totalPedido || calcularTotal(itens),
             clienteNome,
+            telefone,
             enderecoColeta: "Rua Báltico 79 Jardim Presidente",
-            enderecoEntrega,
-            contato,
-            formaPagamento,
+            enderecoEntrega: endereco + (bairro ? ", " + bairro : ""),
+            cupom,
             status: "pendente",
           };
           pedidosDelivery.push(pedidoDelivery);
@@ -2090,6 +2147,7 @@
           return;
         }
 
+        // Otherwise, create comanda for selected mesa
         if (!mesaSelecionada) {
           alert("Selecione uma mesa antes de criar a comanda.");
           return;
