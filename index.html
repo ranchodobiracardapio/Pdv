@@ -196,10 +196,6 @@
         max-height: 180px !important;
         overflow-y: auto !important;
       }
-      /* Hide "Todos" category button on mobile */
-      #btnCatTodos {
-        display: none !important;
-      }
     }
     .editable-mesa {
       border: none;
@@ -1315,8 +1311,7 @@
         } else if (categoria === "todos") {
           itens = estoqueDados.todos;
         }
-        // Show all items for "todos" on desktop, no slice
-        if (categoria !== "todos" && itens.length > 6) {
+        if (categoria === "todos" && itens.length > 6) {
           itens = itens.slice(0, 6);
         }
         itens.forEach((item) => {
