@@ -387,6 +387,21 @@
             </div>
             <div>
               <label
+                for="telefoneCliente"
+                class="block text-sm font-semibold text-[#0f3a7d] mb-1"
+                >Telefone</label
+              >
+              <input
+                type="tel"
+                id="telefoneCliente"
+                name="telefoneCliente"
+                pattern="[\d\s()+-]+"
+                placeholder="(99) 99999-9999"
+                class="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#2563eb]"
+              />
+            </div>
+            <div>
+              <label
                 for="enderecoColeta"
                 class="block text-sm font-semibold text-[#0f3a7d] mb-1"
                 >Endereço de Coleta</label
@@ -855,6 +870,7 @@
       const inputCreateOrder = document.getElementById("inputCreateOrder");
       const clienteNomeComandaInput = document.getElementById("clienteNomeComanda");
       const createOrderUnfoundContainer = document.getElementById("createOrderUnfoundContainer");
+      const telefoneClienteInput = formDelivery.querySelector("#telefoneCliente");
 
       let mesaSelecionada = null;
       let comanda = {};
@@ -1655,31 +1671,26 @@
           const uniqueNaoEncontrados = [...new Set(naoEncontrados)];
           const div = document.createElement("div");
           div.className = "bg-yellow-100 border border-yellow-400 text-yellow-800 p-2 rounded text-xs";
-          // Show only the list of products, no extra text
+          // Show the entire original text instead of only the not found items
           div.innerHTML = `
-            <ul class="list-disc list-inside mb-2">
-              ${uniqueNaoEncontrados.map(item => `<li>${item}</li>`).join("")}
-            </ul>
+            <pre class="whitespace-pre-wrap break-words mb-2">${texto.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>
           `;
           const btnImprimir = document.createElement("button");
           btnImprimir.type = "button";
           btnImprimir.className = "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-3 rounded transition flex items-center justify-center space-x-1";
-          btnImprimir.innerHTML = `<i class="fas fa-print"></i><span>Imprimir Não Encontrados</span>`;
+          btnImprimir.innerHTML = `<i class="fas fa-print"></i><span>Imprimir Texto Completo</span>`;
           btnImprimir.addEventListener("click", () => {
-            let texto = "";
-            uniqueNaoEncontrados.forEach(prod => {
-              texto += `${prod}\n`;
-            });
+            let textoParaImprimir = texto;
             if (navigator.share && window.innerWidth <= 767) {
               navigator.share({
-                title: `Produtos não encontrados - ${mesaSelecionada}`,
-                text: texto,
+                title: `Texto completo com itens não encontrados - ${mesaSelecionada}`,
+                text: textoParaImprimir,
               }).catch((error) => {
                 alert("Erro ao compartilhar: " + error);
               });
             } else {
               const printWindow = window.open("", "", "width=400,height=600");
-              printWindow.document.write('<pre style="font-family:sans-serif; font-size:16px;">' + texto + "</pre>");
+              printWindow.document.write('<pre style="font-family:sans-serif; font-size:16px;">' + textoParaImprimir.replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</pre>");
               printWindow.document.close();
               printWindow.focus();
               printWindow.print();
@@ -2142,6 +2153,7 @@
       function abrirModalDelivery(pedido, idx) {
         currentDeliveryEditIndex = idx;
         formDelivery.clienteNome.value = pedido.clienteNome || "";
+        formDelivery.telefoneCliente.value = pedido.telefone || "";
         formDelivery.enderecoColeta.value = pedido.enderecoColeta || "Rua Báltico 79 Jardim Presidente";
         formDelivery.enderecoEntrega.value = pedido.enderecoEntrega || "";
         deliveryRatesDiv.innerHTML = '<p>Consultando taxas de entrega...</p>';
@@ -2197,15 +2209,17 @@
         if (currentDeliveryEditIndex === null) return;
 
         const clienteNome = formDelivery.clienteNome.value.trim();
+        const telefoneCliente = formDelivery.telefoneCliente.value.trim();
         const enderecoColeta = formDelivery.enderecoColeta.value.trim();
         const enderecoEntrega = formDelivery.enderecoEntrega.value.trim();
 
         if (!clienteNome || !enderecoColeta || !enderecoEntrega) {
-          alert("Por favor, preencha todos os campos.");
+          alert("Por favor, preencha todos os campos obrigatórios.");
           return;
         }
 
         pedidosDelivery[currentDeliveryEditIndex].clienteNome = clienteNome;
+        pedidosDelivery[currentDeliveryEditIndex].telefone = telefoneCliente;
         pedidosDelivery[currentDeliveryEditIndex].enderecoColeta = enderecoColeta;
         pedidosDelivery[currentDeliveryEditIndex].enderecoEntrega = enderecoEntrega;
         pedidosDelivery[currentDeliveryEditIndex].status = "confirmado";
