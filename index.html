@@ -1589,33 +1589,38 @@
           let nomeProduto = "";
           let quantidade = 1;
 
-          let match = linha.match(/^(.*?)[\s]*[xX](\d+)$/);
+          // Try to parse lines like "1 x Marmita P" or "1 x Marmita M" or "1 x Coca-Cola Mini 269ml"
+          let match = linha.match(/^\*?(\d+)\s*x\s*(.+)$/i);
           if (match) {
-            nomeProduto = match[1].trim();
-            quantidade = parseInt(match[2]);
+            quantidade = parseInt(match[1]);
+            nomeProduto = match[2].trim();
           } else {
-            match = linha.match(/^(.*?)[\s]+(\d+)$/);
+            // Try to parse lines like "1 x Marmita P" without asterisk
+            match = linha.match(/^(\d+)\s+(.+)$/);
             if (match) {
-              nomeProduto = match[1].trim();
-              quantidade = parseInt(match[2]);
+              quantidade = parseInt(match[1]);
+              nomeProduto = match[2].trim();
             } else {
-              match = linha.match(/^(\d+)[\s]+(.*)$/);
-              if (match) {
-                quantidade = parseInt(match[1]);
-                nomeProduto = match[2].trim();
-              } else {
-                nomeProduto = linha;
-                quantidade = 1;
-              }
+              // Try to parse lines like "Marmita P" or "Taxa de entrega (7 km)"
+              nomeProduto = linha.replace(/^\*+|\*+$/g, "").trim();
+              quantidade = 1;
             }
           }
 
           if (quantidade < 1) quantidade = 1;
 
+          // Remove any trailing price info or parentheses from nomeProduto
+          nomeProduto = nomeProduto.replace(/\(.*?\)/g, "").trim();
+
           let produtoEncontrado = null;
           for (const cat in estoqueDados) {
             produtoEncontrado = estoqueDados[cat].find(p => p.nome.toLowerCase() === nomeProduto.toLowerCase());
             if (produtoEncontrado) break;
+          }
+
+          // Special case: if line contains "Taxa de entrega" or "Taxa de entrega (7 km)" or similar, map to Taxa de Entrega product
+          if (!produtoEncontrado && nomeProduto.toLowerCase().includes("taxa de entrega")) {
+            produtoEncontrado = estoqueDados.todos.find(p => p.isTaxaEntrega);
           }
 
           if (produtoEncontrado) {
