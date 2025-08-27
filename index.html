@@ -444,7 +444,7 @@
         role="dialog"
       >
         <div
-          class="bg-white rounded-lg max-w-lg w-full p-4 max-h-[70vh] overflow-auto"
+          class="bg-white rounded-lg max-w-lg w-full p-4 max-h-[70vh] overflow-auto flex flex-col"
         >
           <h2
             class="text-base font-bold mb-2 text-[#0f3a7d] select-text"
@@ -458,7 +458,7 @@
             class="w-full border border-gray-300 rounded p-2 text-xs font-mono resize-y focus:outline-none focus:ring-2 focus:ring-[#2563eb]"
             placeholder="Cole o texto do pedido aqui..."
           ></textarea>
-          <div class="flex justify-end space-x-2 mt-2">
+          <div class="flex justify-between space-x-2 mt-2" id="createOrderButtons">
             <button
               type="button"
               id="btnCancelCreateOrder"
@@ -474,6 +474,7 @@
               Criar Comanda
             </button>
           </div>
+          <div id="createOrderUnfoundContainer" class="mt-3"></div>
         </div>
       </div>
       <section class="flex-1 p-2 space-y-1" id="vendaSection">
@@ -517,7 +518,7 @@
         </div>
         <div
           id="produtosGrid"
-          class="scrollbar-thin scrollable grid grid-cols-3 sm:grid-cols-3 md:grid-cols-5 gap-1"
+          class="scrollbar-thin grid grid-cols-3 sm:grid-cols-3 md:grid-cols-5 gap-1"
           tabindex="0"
           aria-label="Lista de produtos para venda"
         ></div>
@@ -795,11 +796,12 @@
         </div>
         <button
           id="btnImprimirComanda"
-          class="mt-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded transition flex items-center justify-center space-x-1"
+          class="mt-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded transition flex items-center justify-center space-x-1 hidden"
           type="button"
           aria-label="Imprimir comanda"
         >
           <i class="fas fa-print"></i>
+          <span>Imprimir</span>
         </button>
       </aside>
     </div>
@@ -832,7 +834,7 @@
       const estoqueLista = document.getElementById("estoqueLista");
       const comandaCardsContainer = document.getElementById("comandaCardsContainer");
       const produtosGrid = document.getElementById("produtosGrid");
-      const btnImprimirComanda = document.querySelectorAll("#btnImprimirComanda");
+      const btnImprimirComanda = document.getElementById("btnImprimirComanda");
       const btnAbrirComandaMesa = document.getElementById("btnAbrirComandaMesa");
       const mesaStatusBadge = document.getElementById("mesaStatusBadge");
       const appContainer = document.getElementById("appContainer");
@@ -851,9 +853,8 @@
       const btnCreateOrder = document.getElementById("btnCreateOrder");
       const modalCreateOrder = document.getElementById("modalCreateOrder");
       const inputCreateOrder = document.getElementById("inputCreateOrder");
-      const btnCancelCreateOrder = document.getElementById("btnCancelCreateOrder");
-      const btnConfirmCreateOrder = document.getElementById("btnConfirmCreateOrder");
       const clienteNomeComandaInput = document.getElementById("clienteNomeComanda");
+      const createOrderUnfoundContainer = document.getElementById("createOrderUnfoundContainer");
 
       let mesaSelecionada = null;
       let comanda = {};
@@ -1311,9 +1312,6 @@
         } else if (categoria === "todos") {
           itens = estoqueDados.todos;
         }
-        if (categoria === "todos" && itens.length > 6) {
-          itens = itens.slice(0, 6);
-        }
         itens.forEach((item) => {
           const div = document.createElement("div");
           div.className =
@@ -1390,6 +1388,7 @@
             '<tr><td colspan="6" class="text-center text-gray-400 py-2 select-text">Nenhuma mesa selecionada.</td></tr>';
           valorTotalEl.textContent = "R$ 0,00";
           habilitarControles(false);
+          btnImprimirComanda.classList.add("hidden");
           return;
         }
         const itens = comanda[mesaSelecionada];
@@ -1398,6 +1397,7 @@
             '<tr><td colspan="6" class="text-center text-gray-400 py-2 select-text">Nenhum item adicionado.</td></tr>';
           valorTotalEl.textContent = "R$ 0,00";
           habilitarControles(true);
+          btnImprimirComanda.classList.add("hidden");
           return;
         }
         let total = 0;
@@ -1425,6 +1425,7 @@
           comandaBody.appendChild(tr);
         });
         valorTotalEl.textContent = `R$ ${total.toFixed(2).replace(".", ",")}`;
+        btnImprimirComanda.classList.remove("hidden");
 
         comandaBody.querySelectorAll("button.remove-item").forEach((btn) => {
           btn.addEventListener("click", () => {
@@ -1533,6 +1534,184 @@
           printWindow.print();
         }
       }
+
+      // Função para criar comanda a partir do texto do textarea
+      function criarComandaAPartirDeTexto(texto) {
+        if (!mesaSelecionada) {
+          alert("Selecione uma mesa antes de criar a comanda.");
+          return;
+        }
+        if (!texto || texto.trim() === "") {
+          alert("Por favor, insira o texto do pedido.");
+          return;
+        }
+
+        // Limpa a comanda atual da mesa
+        if (!comanda[mesaSelecionada]) {
+          comanda[mesaSelecionada] = [];
+        } else {
+          // Devolver estoque dos itens atuais antes de limpar
+          comanda[mesaSelecionada].forEach((item) => {
+            if (!item.isTaxaEntrega) {
+              for (const cat in estoqueDados) {
+                const prod = estoqueDados[cat].find((p) => p.nome === item.name);
+                if (prod) {
+                  prod.estoque += item.qtde;
+                  break;
+                }
+              }
+            }
+          });
+          comanda[mesaSelecionada] = [];
+        }
+
+        const linhas = texto.split("\n").map(l => l.trim()).filter(l => l.length > 0);
+        const itensParseados = [];
+        const naoEncontrados = [];
+
+        linhas.forEach(linha => {
+          let nomeProduto = "";
+          let quantidade = 1;
+
+          let match = linha.match(/^(.*?)[\s]*[xX](\d+)$/);
+          if (match) {
+            nomeProduto = match[1].trim();
+            quantidade = parseInt(match[2]);
+          } else {
+            match = linha.match(/^(.*?)[\s]+(\d+)$/);
+            if (match) {
+              nomeProduto = match[1].trim();
+              quantidade = parseInt(match[2]);
+            } else {
+              match = linha.match(/^(\d+)[\s]+(.*)$/);
+              if (match) {
+                quantidade = parseInt(match[1]);
+                nomeProduto = match[2].trim();
+              } else {
+                nomeProduto = linha;
+                quantidade = 1;
+              }
+            }
+          }
+
+          if (quantidade < 1) quantidade = 1;
+
+          let produtoEncontrado = null;
+          for (const cat in estoqueDados) {
+            produtoEncontrado = estoqueDados[cat].find(p => p.nome.toLowerCase() === nomeProduto.toLowerCase());
+            if (produtoEncontrado) break;
+          }
+
+          if (produtoEncontrado) {
+            itensParseados.push({
+              name: produtoEncontrado.nome,
+              price: produtoEncontrado.preco,
+              img: produtoEncontrado.img,
+              qtde: quantidade,
+              isTaxaEntrega: produtoEncontrado.isTaxaEntrega || false,
+            });
+          } else {
+            naoEncontrados.push(nomeProduto);
+          }
+        });
+
+        let estoqueInsuficiente = false;
+        for (const item of itensParseados) {
+          if (!item.isTaxaEntrega) {
+            for (const cat in estoqueDados) {
+              const prod = estoqueDados[cat].find(p => p.nome === item.name);
+              if (prod) {
+                if (prod.estoque < item.qtde) {
+                  alert(`Estoque insuficiente para o produto ${item.name}. Quantidade solicitada: ${item.qtde}, disponível: ${prod.estoque}`);
+                  estoqueInsuficiente = true;
+                  break;
+                }
+              }
+            }
+          }
+          if (estoqueInsuficiente) break;
+        }
+        if (estoqueInsuficiente) return;
+
+        itensParseados.forEach(item => {
+          if (!item.isTaxaEntrega) {
+            for (const cat in estoqueDados) {
+              const prod = estoqueDados[cat].find(p => p.nome === item.name);
+              if (prod) {
+                prod.estoque -= item.qtde;
+                break;
+              }
+            }
+          }
+          comanda[mesaSelecionada].push(item);
+        });
+
+        atualizarComanda();
+        atualizarEstoqueVisual();
+
+        createOrderUnfoundContainer.innerHTML = "";
+
+        if (naoEncontrados.length > 0) {
+          const uniqueNaoEncontrados = [...new Set(naoEncontrados)];
+          const div = document.createElement("div");
+          div.className = "bg-yellow-100 border border-yellow-400 text-yellow-800 p-2 rounded text-xs";
+          // Show only the list of products, no extra text
+          div.innerHTML = `
+            <ul class="list-disc list-inside mb-2">
+              ${uniqueNaoEncontrados.map(item => `<li>${item}</li>`).join("")}
+            </ul>
+          `;
+          const btnImprimir = document.createElement("button");
+          btnImprimir.type = "button";
+          btnImprimir.className = "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-3 rounded transition flex items-center justify-center space-x-1";
+          btnImprimir.innerHTML = `<i class="fas fa-print"></i><span>Imprimir Não Encontrados</span>`;
+          btnImprimir.addEventListener("click", () => {
+            let texto = "";
+            uniqueNaoEncontrados.forEach(prod => {
+              texto += `${prod}\n`;
+            });
+            if (navigator.share && window.innerWidth <= 767) {
+              navigator.share({
+                title: `Produtos não encontrados - ${mesaSelecionada}`,
+                text: texto,
+              }).catch((error) => {
+                alert("Erro ao compartilhar: " + error);
+              });
+            } else {
+              const printWindow = window.open("", "", "width=400,height=600");
+              printWindow.document.write('<pre style="font-family:sans-serif; font-size:16px;">' + texto + "</pre>");
+              printWindow.document.close();
+              printWindow.focus();
+              printWindow.print();
+            }
+          });
+          div.appendChild(btnImprimir);
+          createOrderUnfoundContainer.appendChild(div);
+        } else {
+          modalCreateOrder.classList.remove("active");
+          inputCreateOrder.value = "";
+          alert("Comanda criada a partir do texto com sucesso.");
+        }
+      }
+
+      btnCreateOrder.addEventListener("click", () => {
+        modalCreateOrder.classList.add("active");
+        inputCreateOrder.focus();
+        createOrderUnfoundContainer.innerHTML = "";
+      });
+
+      document.getElementById("btnCancelCreateOrder").addEventListener("click", () => {
+        modalCreateOrder.classList.remove("active");
+        inputCreateOrder.value = "";
+        createOrderUnfoundContainer.innerHTML = "";
+      });
+
+      document.getElementById("btnConfirmCreateOrder").addEventListener("click", () => {
+        const texto = inputCreateOrder.value;
+        criarComandaAPartirDeTexto(texto);
+      });
+
+      // Restante do código original...
 
       function armazenarComandaCard(mesa, itens) {
         if (!itens || itens.length === 0) return;
@@ -2036,124 +2215,6 @@
         alert("Informações de entrega atualizadas com sucesso.");
       });
 
-      btnCreateOrder.addEventListener("click", () => {
-        inputCreateOrder.value = "";
-        modalCreateOrder.classList.add("active");
-      });
-
-      btnCancelCreateOrder.addEventListener("click", () => {
-        modalCreateOrder.classList.remove("active");
-      });
-
-      btnConfirmCreateOrder.addEventListener("click", () => {
-        const texto = inputCreateOrder.value.trim();
-        if (!texto) {
-          alert("Por favor, insira o texto do pedido.");
-          return;
-        }
-
-        // Parsing the provided example format:
-        // *Rancho do Bira - Nova Lima*
-        // *Cliente:* MATHEUS NEVES
-        // *Telefone:* 67992321321
-        // *Endereço:* Rua Dr Dolor Ferreira 55
-        // *Bairro:* Monte Castelo
-        // *3 x Marmita P*
-        // Preço unitário: R$ 12,00
-        // ...
-        // *Cupom aplicado:* 2% de Desconto para Novos Clientes
-        // *Total:* R$ 206,92
-
-        // Extract client info
-        const clienteRegex = /^\*Cliente:\*\s*(.+)$/im;
-        const telefoneRegex = /^\*Telefone:\*\s*(\d{8,15})$/im;
-        const enderecoRegex = /^\*Endereço:\*\s*(.+)$/im;
-        const bairroRegex = /^\*Bairro:\*\s*(.+)$/im;
-        const cupomRegex = /^\*Cupom aplicado:\*\s*(.+)$/im;
-        const totalRegex = /^\*Total:\*\s*R\$ ?([\d.,]+)/im;
-
-        const clienteMatch = texto.match(clienteRegex);
-        const telefoneMatch = texto.match(telefoneRegex);
-        const enderecoMatch = texto.match(enderecoRegex);
-        const bairroMatch = texto.match(bairroRegex);
-        const cupomMatch = texto.match(cupomRegex);
-        const totalMatch = texto.match(totalRegex);
-
-        const clienteNome = clienteMatch ? clienteMatch[1].trim() : "";
-        const telefone = telefoneMatch ? telefoneMatch[1].trim() : "";
-        const endereco = enderecoMatch ? enderecoMatch[1].trim() : "";
-        const bairro = bairroMatch ? bairroMatch[1].trim() : "";
-        const cupom = cupomMatch ? cupomMatch[1].trim() : "";
-        const totalTexto = totalMatch ? totalMatch[1].replace(",", ".") : null;
-        const totalPedido = totalTexto ? parseFloat(totalTexto) : null;
-
-        // Parse items: lines with "*<qty> x <product>*" and next line "Preço unitário: R$ <price>"
-        const linhas = texto.split("\n");
-        const itens = [];
-        for (let i = 0; i < linhas.length; i++) {
-          const linha = linhas[i].trim();
-          const itemMatch = linha.match(/^\*(\d+)\s+x\s+(.+)\*$/i);
-          if (itemMatch) {
-            const qtde = parseInt(itemMatch[1]);
-            const nomeProduto = itemMatch[2].trim();
-            // Next line should be price unitario
-            const nextLine = linhas[i + 1] ? linhas[i + 1].trim() : "";
-            const precoMatch = nextLine.match(/^Preço unitário:\s*R\$ ?([\d.,]+)/i);
-            let preco = 0;
-            if (precoMatch) {
-              preco = parseFloat(precoMatch[1].replace(",", "."));
-              i++; // skip next line as processed
-            }
-            let img = "https://placehold.co/40x40/png?text=Sem+Imagem";
-            for (const cat in estoqueDados) {
-              const prod = estoqueDados[cat].find((p) => p.nome.toLowerCase() === nomeProduto.toLowerCase());
-              if (prod) {
-                img = prod.img;
-                break;
-              }
-            }
-            itens.push({ name: nomeProduto, qtde, price: preco, img });
-          }
-        }
-
-        if (itens.length === 0) {
-          alert("Nenhum item válido encontrado no texto.");
-          return;
-        }
-
-        // If endereco and telefone present, create delivery order
-        if (endereco && telefone) {
-          const pedidoDelivery = {
-            mesa: "Delivery",
-            itens,
-            total: totalPedido || calcularTotal(itens),
-            clienteNome,
-            telefone,
-            enderecoColeta: "Rua Báltico 79 Jardim Presidente",
-            enderecoEntrega: endereco + (bairro ? ", " + bairro : ""),
-            cupom,
-            status: "pendente",
-          };
-          pedidosDelivery.push(pedidoDelivery);
-          atualizarBadgeDelivery();
-          mostrarDelivery();
-          modalCreateOrder.classList.remove("active");
-          alert("Pedido criado na aba Entregas com endereço e contato preenchidos.");
-          return;
-        }
-
-        // Otherwise, create comanda for selected mesa
-        if (!mesaSelecionada) {
-          alert("Selecione uma mesa antes de criar a comanda.");
-          return;
-        }
-        comanda[mesaSelecionada] = itens;
-        atualizarComanda();
-        habilitarControles(true);
-        modalCreateOrder.classList.remove("active");
-        alert("Comanda criada a partir do texto com sucesso.");
-      });
-
       const btnsFiltroVenda = document.querySelectorAll("#vendaSection > div > button");
       btnsFiltroVenda.forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -2290,9 +2351,7 @@
         mostrarComandas();
       });
 
-      btnImprimirComanda.forEach((btn) => {
-        btn.addEventListener("click", imprimirComanda);
-      });
+      btnImprimirComanda.addEventListener("click", imprimirComanda);
 
       btnAbrirComandaMesa.addEventListener("click", () => {
         if (!mesaSelecionada) {
