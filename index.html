@@ -1347,12 +1347,12 @@
             <span class="text-[9px] text-gray-700">R$ ${item.preco.toFixed(2).replace(".", ",")}</span>
           `;
           div.addEventListener("click", () => {
-            adicionarProduto({ name: item.nome, price: item.preco, img: item.img }, 1);
+            adicionarProduto({ name: item.nome, price: item.preco, img: item.img, isTaxaEntrega: item.isTaxaEntrega || false }, 1);
           });
           div.addEventListener("keydown", (e) => {
             if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
-              adicionarProduto({ name: item.nome, price: item.preco, img: item.img }, 1);
+              adicionarProduto({ name: item.nome, price: item.preco, img: item.img, isTaxaEntrega: item.isTaxaEntrega || false }, 1);
             }
           });
           produtosGrid.appendChild(div);
@@ -1485,18 +1485,6 @@
         const itens = comanda[mesaSelecionada];
         const index = itens.findIndex((i) => i.name === produto.name);
         if (index >= 0) {
-          if (!produto.isTaxaEntrega) {
-            for (const cat in estoqueDados) {
-              const prod = estoqueDados[cat].find((p) => p.nome === produto.name);
-              if (prod) {
-                if (prod.estoque < quantidade) {
-                  alert(`Estoque insuficiente para o produto ${produto.name}.`);
-                  return;
-                }
-                break;
-              }
-            }
-          }
           itens[index].qtde += quantidade;
           if (itens[index].qtde < 1) itens[index].qtde = 1;
         } else {
@@ -1654,13 +1642,19 @@
           }
 
           if (produtoEncontrado) {
-            itensParseados.push({
-              name: produtoEncontrado.nome,
-              price: produtoEncontrado.preco,
-              img: produtoEncontrado.img,
-              qtde: quantidade,
-              isTaxaEntrega: produtoEncontrado.isTaxaEntrega || false,
-            });
+            // Check if item already exists in itensParseados, if so, sum quantities
+            const existingIndex = itensParseados.findIndex(i => i.name === produtoEncontrado.nome);
+            if (existingIndex >= 0) {
+              itensParseados[existingIndex].qtde += quantidade;
+            } else {
+              itensParseados.push({
+                name: produtoEncontrado.nome,
+                price: produtoEncontrado.preco,
+                img: produtoEncontrado.img,
+                qtde: quantidade,
+                isTaxaEntrega: produtoEncontrado.isTaxaEntrega || false,
+              });
+            }
           } else {
             naoEncontrados.push(nomeProduto);
           }
@@ -2192,8 +2186,17 @@
                 alert("Telefone do cliente não informado para envio da mensagem.");
                 return;
               }
-              const mensagem = encodeURIComponent("Seu pedido ficou pronto já está saindo para entrega!");
-              const url = `https://wa.me/${telefone}?text=${mensagem}`;
+              // Compose message with order details and route link
+              let mensagemTexto = `Seu pedido está pronto e a caminho!\n\nItens:\n`;
+              pedido.itens.forEach(item => {
+                mensagemTexto += `- ${item.name} x${item.qtde}\n`;
+              });
+              mensagemTexto += `\nTotal: R$ ${pedido.total.toFixed(2).replace(".", ",")}\n\n`;
+              mensagemTexto += `Rota: https://maps.app.goo.gl/9G7HYEjkbehCNGLE7?g_st=ac\n\nObrigado!`;
+
+              const mensagem = encodeURIComponent(mensagemTexto);
+              // Use fixed delivery person number as per request
+              const url = `https://wa.me/67998330535?text=${mensagem}`;
               window.open(url, "_blank");
             });
           }
@@ -2563,6 +2566,6 @@
       window.selecionarMesa = selecionarMesa;
       window.fecharModal = fecharModal;
     })();
-   </script>
+  </script>
 </body>
 </html>
