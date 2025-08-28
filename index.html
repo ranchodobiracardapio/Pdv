@@ -1585,7 +1585,37 @@
         const itensParseados = [];
         const naoEncontrados = [];
 
+        // Variables to detect delivery info presence
+        let clienteNomeExtraido = "";
+        let telefoneExtraido = "";
+        let enderecoExtraido = "";
+        let bairroExtraido = "";
+        let temCliente = false;
+        let temTelefone = false;
+        let temEndereco = false;
+
         linhas.forEach(linha => {
+          // Detect Cliente, Telefone, Endereço, Bairro
+          if (linha.toLowerCase().startsWith("*cliente:*")) {
+            clienteNomeExtraido = linha.split(":")[1]?.trim() || "";
+            temCliente = clienteNomeExtraido.length > 0;
+            return;
+          }
+          if (linha.toLowerCase().startsWith("*telefone:*")) {
+            telefoneExtraido = linha.split(":")[1]?.trim() || "";
+            temTelefone = telefoneExtraido.length > 0;
+            return;
+          }
+          if (linha.toLowerCase().startsWith("*endereço:*")) {
+            enderecoExtraido = linha.split(":")[1]?.trim() || "";
+            temEndereco = enderecoExtraido.length > 0;
+            return;
+          }
+          if (linha.toLowerCase().startsWith("*bairro:*")) {
+            bairroExtraido = linha.split(":")[1]?.trim() || "";
+            return;
+          }
+
           let nomeProduto = "";
           let quantidade = 1;
 
@@ -1671,6 +1701,32 @@
         atualizarEstoqueVisual();
 
         createOrderUnfoundContainer.innerHTML = "";
+
+        // If delivery info is complete, add to delivery orders directly
+        if (temCliente && temTelefone && temEndereco) {
+          // Add to delivery orders
+          pedidosDelivery.push({
+            mesa: mesaSelecionada,
+            itens: JSON.parse(JSON.stringify(comanda[mesaSelecionada])),
+            total: calcularTotal(comanda[mesaSelecionada]),
+            entregue: false,
+            clienteNome: clienteNomeExtraido,
+            telefone: telefoneExtraido,
+            enderecoColeta: "Rua Báltico 79 Jardim Presidente",
+            enderecoEntrega: enderecoExtraido + (bairroExtraido ? ", " + bairroExtraido : ""),
+            status: "pendente",
+          });
+          // Clear current comanda and update UI
+          comanda[mesaSelecionada] = [];
+          clienteNomeComandaInput.value = "";
+          atualizarComanda();
+          atualizarBadgeDelivery();
+          mostrarDelivery();
+          modalCreateOrder.classList.remove("active");
+          inputCreateOrder.value = "";
+          alert("Comanda criada e adicionada diretamente à aba Entregas.");
+          return;
+        }
 
         if (naoEncontrados.length > 0) {
           const uniqueNaoEncontrados = [...new Set(naoEncontrados)];
@@ -2507,6 +2563,6 @@
       window.selecionarMesa = selecionarMesa;
       window.fecharModal = fecharModal;
     })();
-  </script>
+   </script>
 </body>
 </html>
