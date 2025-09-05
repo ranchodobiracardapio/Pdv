@@ -1539,7 +1539,7 @@
         }
       }
 
-      // Função para criar comanda a partir do texto do textarea
+      // Função para criar comanda a partir do texto do textarea (mantida igual, com ajuste no fluxo de entrega)
       function criarComandaAPartirDeTexto(texto) {
         if (!mesaSelecionada) {
           alert("Selecione uma mesa antes de criar a comanda.");
@@ -1550,11 +1550,10 @@
           return;
         }
 
-        // Limpa a comanda atual da mesa
+        // Limpa a comanda atual da mesa (devolve estoque)
         if (!comanda[mesaSelecionada]) {
           comanda[mesaSelecionada] = [];
         } else {
-          // Devolver estoque dos itens atuais antes de limpar
           comanda[mesaSelecionada].forEach((item) => {
             if (!item.isTaxaEntrega) {
               for (const cat in estoqueDados) {
@@ -1696,30 +1695,37 @@
 
         createOrderUnfoundContainer.innerHTML = "";
 
-        // If delivery info is complete, add to delivery orders directly
+        // Se as informações de entrega estiverem completas, perguntar se deseja enviar para Entregas
         if (temCliente && temTelefone && temEndereco) {
-          // Add to delivery orders
-          pedidosDelivery.push({
-            mesa: mesaSelecionada,
-            itens: JSON.parse(JSON.stringify(comanda[mesaSelecionada])),
-            total: calcularTotal(comanda[mesaSelecionada]),
-            entregue: false,
-            clienteNome: clienteNomeExtraido,
-            telefone: telefoneExtraido,
-            enderecoColeta: "Rua Báltico 79 Jardim Presidente",
-            enderecoEntrega: enderecoExtraido + (bairroExtraido ? ", " + bairroExtraido : ""),
-            status: "pendente",
-          });
-          // Clear current comanda and update UI
-          comanda[mesaSelecionada] = [];
-          clienteNomeComandaInput.value = "";
-          atualizarComanda();
-          atualizarBadgeDelivery();
-          mostrarDelivery();
-          modalCreateOrder.classList.remove("active");
-          inputCreateOrder.value = "";
-          alert("Comanda criada e adicionada diretamente à aba Entregas.");
-          return;
+          if (confirm("Informações de entrega detectadas. Deseja enviar o pedido para a aba Entregas?")) {
+            pedidosDelivery.push({
+              mesa: mesaSelecionada,
+              itens: JSON.parse(JSON.stringify(comanda[mesaSelecionada])),
+              total: calcularTotal(comanda[mesaSelecionada]),
+              entregue: false,
+              clienteNome: clienteNomeExtraido,
+              telefone: telefoneExtraido,
+              enderecoColeta: "Rua Báltico 79 Jardim Presidente",
+              enderecoEntrega: enderecoExtraido + (bairroExtraido ? ", " + bairroExtraido : ""),
+              status: "pendente",
+            });
+            // Limpa a comanda da mesa somente se o usuário confirmar
+            comanda[mesaSelecionada] = [];
+            clienteNomeComandaInput.value = "";
+            atualizarComanda();
+            atualizarBadgeDelivery();
+            mostrarDelivery();
+            modalCreateOrder.classList.remove("active");
+            inputCreateOrder.value = "";
+            alert("Comanda criada e adicionada diretamente à aba Entregas.");
+            return;
+          } else {
+            // Se não quiser enviar para entrega, mantém a comanda na mesa e fecha modal
+            modalCreateOrder.classList.remove("active");
+            inputCreateOrder.value = "";
+            alert("Comanda criada a partir do texto com sucesso.");
+            return;
+          }
         }
 
         if (naoEncontrados.length > 0) {
@@ -1777,8 +1783,7 @@
         criarComandaAPartirDeTexto(texto);
       });
 
-      // Restante do código original...
-
+      // Função para armazenar card de comanda em aberto
       function armazenarComandaCard(mesa, itens) {
         if (!itens || itens.length === 0) return;
         const card = document.createElement("div");
@@ -1850,13 +1855,19 @@
         });
 
         btnEncerrar.addEventListener("click", () => {
-          adicionarPedidoAberto({
+          // Enviar para aba de entregas com dados básicos para edição
+          pedidosDelivery.push({
             mesa,
             itens: JSON.parse(JSON.stringify(itens)),
             total,
             entregue: false,
             clienteNome: clientesComanda[mesa] || "",
+            telefone: "",
+            enderecoColeta: "Rua Báltico 79 Jardim Presidente",
+            enderecoEntrega: "",
+            status: "pendente",
           });
+
           vendasFinalizadas.push({
             mesa,
             itens: JSON.parse(JSON.stringify(itens)),
@@ -1874,7 +1885,8 @@
           atualizarBadgeMesa();
           atualizarPainelFinanceiro();
           atualizarBadgePedidos();
-          alert(`Comanda da ${mesa} encerrada e enviada para o financeiro.`);
+          atualizarBadgeDelivery();
+          alert(`Comanda da ${mesa} encerrada e enviada para o financeiro e aba de entregas.`);
           selecionarProximaMesaDisponivel();
         });
 
@@ -2098,14 +2110,14 @@
 
           const status = pedido.status || "pendente";
 
-          const temInfoEntrega = pedido.clienteNome && pedido.enderecoColeta && pedido.enderecoEntrega;
+          const temInfoEntrega = pedido.clienteNome && pedido.telefone && pedido.enderecoColeta && pedido.enderecoEntrega;
 
           let printButtonHtml = "";
           if (temInfoEntrega) {
             printButtonHtml = `<button type="button" class="btn-imprimir-delivery bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-2 py-0.5 rounded shadow transition" aria-label="Imprimir entrega">Imprimir</button>`;
           }
 
-          // Add "Despachar" button for delivery orders
+          // Add "Despachar" button for delivery orders only if all delivery info is filled
           let despacharButtonHtml = "";
           if (temInfoEntrega && status === "pendente") {
             despacharButtonHtml = `<button type="button" class="btn-despachar-delivery bg-green-600 hover:bg-green-700 text-white text-xs font-semibold px-2 py-0.5 rounded shadow transition" aria-label="Despachar entrega">Despachar</button>`;
@@ -2186,16 +2198,17 @@
                 alert("Telefone do cliente não informado para envio da mensagem.");
                 return;
               }
-              // Compose message with order details and route link
               let mensagemTexto = `Seu pedido está pronto e a caminho!\n\nItens:\n`;
               pedido.itens.forEach(item => {
                 mensagemTexto += `- ${item.name} x${item.qtde}\n`;
               });
               mensagemTexto += `\nTotal: R$ ${pedido.total.toFixed(2).replace(".", ",")}\n\n`;
-              mensagemTexto += `Rota: https://maps.app.goo.gl/9G7HYEjkbehCNGLE7?g_st=ac\n\nObrigado!`;
+              const enderecoColetaEncoded = encodeURIComponent(pedido.enderecoColeta);
+              const enderecoEntregaEncoded = encodeURIComponent(pedido.enderecoEntrega);
+              const rotaUrl = `https://www.google.com/maps/dir/?api=1&origin=${enderecoColetaEncoded}&destination=${enderecoEntregaEncoded}&travelmode=driving`;
+              mensagemTexto += `Rota: ${rotaUrl}\n\nObrigado!`;
 
               const mensagem = encodeURIComponent(mensagemTexto);
-              // Use fixed delivery person number as per request
               const url = `https://wa.me/67998330535?text=${mensagem}`;
               window.open(url, "_blank");
             });
@@ -2293,23 +2306,75 @@
         alert("Informações de entrega atualizadas com sucesso.");
       });
 
-      const btnsFiltroVenda = document.querySelectorAll("#vendaSection > div > button");
-      btnsFiltroVenda.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const categoria = btn.dataset.categoria;
-          atualizarBotaoAtivo(btn.parentElement, btn);
-          renderizarProdutos(categoria);
-        });
+      // Ajuste no botão Finalizar para enviar para entregas se cliente preenchido
+      btnFinalizar.addEventListener("click", () => {
+        if (!mesaSelecionada) return;
+
+        const clienteNome = clienteNomeComandaInput.value.trim();
+        const itensComanda = comanda[mesaSelecionada];
+        if (!itensComanda || itensComanda.length === 0) {
+          alert("Adicione itens antes de finalizar.");
+          return;
+        }
+
+        if (clienteNome) {
+          // Enviar para entregas
+          pedidosDelivery.push({
+            mesa: mesaSelecionada,
+            itens: JSON.parse(JSON.stringify(itensComanda)),
+            total: calcularTotal(itensComanda),
+            entregue: false,
+            clienteNome: clienteNome,
+            telefone: "",
+            enderecoColeta: "Rua Báltico 79 Jardim Presidente",
+            enderecoEntrega: "",
+            status: "pendente",
+          });
+          comanda[mesaSelecionada] = [];
+          clienteNomeComandaInput.value = "";
+          atualizarComanda();
+          atualizarBadgeDelivery();
+          mostrarDelivery();
+          alert("Comanda finalizada e enviada para a aba de entregas.");
+        } else {
+          // Armazenar como comanda em aberto
+          armazenarComandaCard(mesaSelecionada, itensComanda);
+          clientesComanda[mesaSelecionada] = clienteNome;
+          adicionarPedidoAberto({
+            mesa: mesaSelecionada,
+            itens: JSON.parse(JSON.stringify(itensComanda)),
+            total: calcularTotal(itensComanda),
+            entregue: false,
+            clienteNome: clienteNome,
+          });
+          comanda[mesaSelecionada] = [];
+          clienteNomeComandaInput.value = "";
+          atualizarBadgeMesa();
+          atualizarComanda();
+          mostrarComandas();
+          alert("Comanda finalizada e armazenada como em aberto.");
+        }
       });
 
-      const btnsFiltroEstoque = document.querySelectorAll("#estoqueSection > div > button");
-      btnsFiltroEstoque.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const categoria = btn.dataset.categoria;
-          atualizarBotaoAtivo(btn.parentElement, btn);
-          renderizarEstoque(categoria);
-        });
+      btnCreateOrder.addEventListener("click", () => {
+        modalCreateOrder.classList.add("active");
+        inputCreateOrder.focus();
+        createOrderUnfoundContainer.innerHTML = "";
       });
+
+      document.getElementById("btnCancelCreateOrder").addEventListener("click", () => {
+        modalCreateOrder.classList.remove("active");
+        inputCreateOrder.value = "";
+        createOrderUnfoundContainer.innerHTML = "";
+      });
+
+      document.getElementById("btnConfirmCreateOrder").addEventListener("click", () => {
+        const texto = inputCreateOrder.value;
+        criarComandaAPartirDeTexto(texto);
+      });
+
+      btnAbrirMesas.addEventListener("click", abrirModal);
+      btnFecharMesas.addEventListener("click", fecharModal);
 
       btnEstoque.addEventListener("click", () => {
         vendaSection.classList.add("hidden");
@@ -2369,9 +2434,6 @@
         btnDelivery.classList.add("text-[#f97316]");
       });
 
-      btnAbrirMesas.addEventListener("click", abrirModal);
-      btnFecharMesas.addEventListener("click", fecharModal);
-
       btnCancelar.addEventListener("click", () => {
         if (!mesaSelecionada) return;
         comanda[mesaSelecionada].forEach((item) => {
@@ -2406,29 +2468,6 @@
         selecionarProximaMesaDisponivel();
       }
 
-      btnFinalizar.addEventListener("click", () => {
-        if (!mesaSelecionada) return;
-        armazenarComandaCard(mesaSelecionada, comanda[mesaSelecionada]);
-        clientesComanda[mesaSelecionada] = clienteNomeComandaInput.value.trim();
-        if (clientesComanda[mesaSelecionada]) {
-          adicionarPedidoAberto({
-            mesa: mesaSelecionada,
-            itens: JSON.parse(JSON.stringify(comanda[mesaSelecionada])),
-            total: calcularTotal(comanda[mesaSelecionada]),
-            entregue: false,
-            clienteNome: clientesComanda[mesaSelecionada],
-          });
-        }
-        comanda[mesaSelecionada] = [];
-        clienteNomeComandaInput.value = "";
-        atualizarBadgeMesa();
-        codigoInput.value = "";
-        atualizarComanda();
-        habilitarControles(false);
-        trocarMesaAposAcao();
-        mostrarComandas();
-      });
-
       btnImprimirComanda.addEventListener("click", imprimirComanda);
 
       btnAbrirComandaMesa.addEventListener("click", () => {
@@ -2452,91 +2491,10 @@
         alert(`Comanda da ${mesaSelecionada} carregada.`);
       });
 
-      function toggleFullscreen() {
-        if (!document.fullscreenElement) {
-          if (appContainer.requestFullscreen) {
-            appContainer.requestFullscreen();
-          } else if (appContainer.webkitRequestFullscreen) {
-            appContainer.webkitRequestFullscreen();
-          } else if (appContainer.msRequestFullscreen) {
-            appContainer.msRequestFullscreen();
-          }
-          btnFullscreenToggle.innerHTML = '<i class="fas fa-compress"></i><span>Sair Tela Cheia</span>';
-        } else {
-          if (document.exitFullscreen) {
-            document.exitFullscreen();
-          } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-          } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-          }
-          btnFullscreenToggle.innerHTML = '<i class="fas fa-expand"></i><span>Tela Cheia</span>';
-        }
-      }
+      window.selecionarMesa = selecionarMesa;
+      window.fecharModal = fecharModal;
 
-      btnFullscreenToggle.addEventListener("click", toggleFullscreen);
-
-      document.addEventListener("fullscreenchange", () => {
-        if (!document.fullscreenElement) {
-          btnFullscreenToggle.innerHTML = '<i class="fas fa-expand"></i><span>Tela Cheia</span>';
-        }
-      });
-
-      document.addEventListener("keydown", (e) => {
-        if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
-        const key = e.key.toLowerCase();
-        switch (key) {
-          case "t":
-            adicionarProduto({ name: "Taxa de Entrega", price: taxaEntregaValor, img: "https://placehold.co/80x80/png?text=Entrega", isTaxaEntrega: true }, 1);
-            break;
-          case "p":
-            adicionarProduto({ name: "Marmita P", price: 12.0, img: "https://placehold.co/80x80/png?text=Marmita+P" }, 1);
-            break;
-          case "m":
-            adicionarProduto({ name: "Marmita M", price: 15.0, img: "https://placehold.co/80x80/png?text=Marmita+M" }, 1);
-            break;
-          case "g":
-            adicionarProduto({ name: "Marmita G", price: 20.0, img: "https://placehold.co/80x80/png?text=Marmita+G" }, 1);
-            break;
-          case "1":
-            adicionarProduto({ name: "Coca-Cola Mini 269ml", price: 5.0, img: "https://placehold.co/80x80/png?text=Coca-Cola+Mini" }, 1);
-            break;
-          case "2":
-            adicionarProduto({ name: "Guaraná 310ml", price: 4.0, img: "https://placehold.co/80x80/png?text=Guaraná+310ml" }, 1);
-            break;
-          case "3":
-            adicionarProduto({ name: "Refriko Pet 500ml", price: 5.0, img: "https://placehold.co/80x80/png?text=Refriko+500ml" }, 1);
-            break;
-          case "4":
-            adicionarProduto({ name: "Coca-Cola Vidro 1L", price: 8.0, img: "https://placehold.co/80x80/png?text=Coca-Cola+1L" }, 1);
-            break;
-          case "5":
-            adicionarProduto({ name: "Coca-Cola Pet 2L", price: 15.0, img: "https://placehold.co/80x80/png?text=Coca-Cola+2L" }, 1);
-            break;
-          case "6":
-            adicionarProduto({ name: "Tubaína Pet 2L", price: 8.0, img: "https://placehold.co/80x80/png?text=Tubaína+2L" }, 1);
-            break;
-          case "7":
-            adicionarProduto({ name: "Carne Assada 100g", price: 9.0, img: "https://placehold.co/80x80/png?text=Carne+Assada" }, 1);
-            break;
-          case "8":
-            adicionarProduto({ name: "Marmita de Arroz", price: 7.0, img: "https://placehold.co/80x80/png?text=Marmita+Arroz" }, 1);
-            break;
-          case "9":
-            adicionarProduto({ name: "Marmita de Feijão", price: 6.0, img: "https://placehold.co/80x80/png?text=Marmita+Feijão" }, 1);
-            break;
-          case "0":
-            adicionarProduto({ name: "Marmita de Macarrão", price: 6.0, img: "https://placehold.co/80x80/png?text=Marmita+Macarrão" }, 1);
-            break;
-        }
-      });
-
-      clienteNomeComandaInput.addEventListener("input", () => {
-        if (mesaSelecionada) {
-          clientesComanda[mesaSelecionada] = clienteNomeComandaInput.value.trim();
-        }
-      });
-
+      // Inicialização
       function init() {
         carregarVendasLocalStorage();
         gerarMesas();
@@ -2551,20 +2509,8 @@
         atualizarBadgePedidos();
         atualizarContadorMesasAbertas();
         atualizarBadgeDelivery();
-        document.body.addEventListener("click", (e) => {
-          if (e.target.closest(".btn-entregar")) {
-            const btnDelivery = document.getElementById("btnDelivery");
-            if (btnDelivery) {
-              btnDelivery.click();
-            }
-          }
-        });
       }
-
       init();
-
-      window.selecionarMesa = selecionarMesa;
-      window.fecharModal = fecharModal;
     })();
   </script>
 </body>
